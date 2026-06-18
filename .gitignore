@@ -3,3 +3,6 @@ __pycache__/
 _tmp_html/
 ~$*.xlsx
 .DS_Store
+PDFs/
+PDF_Exports/
+*.pdf

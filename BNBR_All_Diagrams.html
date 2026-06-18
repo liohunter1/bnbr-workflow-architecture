@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BNBR ApprovalMax Workflow Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0d0f18;
+    --surface: #151824;
+    --surface2: #1c2033;
+    --border: #252840;
+    --accent: #4f8ef7;
+    --accent2: #f0c040;
+    --text: #dde3f0;
+    --text-muted: #6b7494;
+    --success: #2ecc71;
+    --danger: #e74c3c;
+    --sidebar-w: 260px;
+    --header-h: 58px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── TOP HEADER ── */
+  header {
+    height: var(--header-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 14px;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+  .logo {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .header-title { flex: 1 }
+  .header-title h1 { font-size: .95em; font-weight: 600; color: var(--text); }
+  .header-title p { font-size: .72em; color: var(--text-muted); margin-top: 1px; }
+  .header-meta {
+    display: flex; gap: 10px; align-items: center;
+  }
+  .badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: .7em;
+    color: var(--text-muted);
+  }
+  .badge span { color: var(--accent2); font-weight: 600; }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .sidebar-search {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-search input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    color: var(--text);
+    font-size: .78em;
+    font-family: inherit;
+    outline: none;
+  }
+  .sidebar-search input:focus { border-color: var(--accent); }
+  .sidebar-search input::placeholder { color: var(--text-muted); }
+
+  .sidebar-label {
+    padding: 10px 14px 6px;
+    font-size: .65em;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    border-bottom: 1px solid var(--border);
+  }
+
+  nav ul {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    padding: 6px 0;
+  }
+  nav ul li a {
+    display: block;
+    padding: 8px 14px;
+    font-size: .75em;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+    line-height: 1.4;
+  }
+  nav ul li a:hover {
+    color: var(--text);
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+  nav ul li a.active {
+    color: var(--accent);
+    background: rgba(79,142,247,.08);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+  .sidebar-counter {
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    font-size: .68em;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    scroll-behavior: smooth;
+  }
+
+  .welcome {
+    background: linear-gradient(135deg, rgba(79,142,247,.12), rgba(240,192,64,.08));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .welcome-icon { font-size: 2em; }
+  .welcome-text h2 { font-size: .95em; font-weight: 600; color: var(--accent2); }
+  .welcome-text p { font-size: .78em; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+
+  /* ── DIAGRAM CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    scroll-margin-top: 20px;
+  }
+  .card:hover {
+    border-color: rgba(79,142,247,.4);
+    box-shadow: 0 4px 24px rgba(79,142,247,.08);
+    transition: all .2s;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .card-icon {
+    font-size: 1.1em;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .card-header h2 {
+    flex: 1;
+    font-size: .85em;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .zoom-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text-muted);
+    font-size: .7em;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .zoom-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  .diagram-wrap {
+    padding: 16px;
+    background: var(--bg);
+    overflow-x: auto;
+  }
+  .diagram-wrap.fit .mermaid svg {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .mermaid {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    min-height: 80px;
+    display: flex;
+    justify-content: center;
+  }
+  .mermaid svg {
+    max-height: 680px;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3f5a; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">B</div>
+  <div class="header-title">
+    <h1>BNBR Kenya &mdash; ApprovalMax Workflow Architecture</h1>
+    <p>Document Ref: BNBR/FIN/AMWP/001/2026 &nbsp;|&nbsp; Effective: 1 April 2026 &nbsp;|&nbsp; Integrated with Xero</p>
+  </div>
+  <div class="header-meta">
+    <div class="badge">Diagrams: <span>20</span></div>
+    <div class="badge">Version <span>1.0</span></div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="sidebar-search">
+      <input type="text" id="searchInput" placeholder="&#x1F50D; Search diagrams..." oninput="filterNav(this.value)">
+    </div>
+    <div class="sidebar-label">Workflow Diagrams</div>
+    <nav>
+      <ul id="navList">
+        <li><a href="#diag0" onclick="setActive(this)">OUTPUT 1 — GOVERNANCE HIERARCHY MAP (Diagr…</a></li>
+<li><a href="#diag1" onclick="setActive(this)">OUTPUT 1 — GOVERNANCE HIERARCHY MAP (Diagr…</a></li>
+<li><a href="#diag2" onclick="setActive(this)">WORKFLOW 1 — PURCHASE REQUISITION & PROCUR…</a></li>
+<li><a href="#diag3" onclick="setActive(this)">WORKFLOW 2 — SUPPLIER BILL (INVOICE) APPRO…</a></li>
+<li><a href="#diag4" onclick="setActive(this)">WORKFLOW 3 — PAYMENT APPROVAL & EXECUTION …</a></li>
+<li><a href="#diag5" onclick="setActive(this)">WORKFLOW 3 — PAYMENT APPROVAL & EXECUTION …</a></li>
+<li><a href="#diag6" onclick="setActive(this)">WORKFLOW 4 — CASH REQUISITION, IMPREST & P…</a></li>
+<li><a href="#diag7" onclick="setActive(this)">WORKFLOW 5 — PAYROLL APPROVAL</a></li>
+<li><a href="#diag8" onclick="setActive(this)">WORKFLOW 6 — JOURNAL ENTRY APPROVAL</a></li>
+<li><a href="#diag9" onclick="setActive(this)">WORKFLOW 7 — BUDGET ADJUSTMENT APPROVAL</a></li>
+<li><a href="#diag10" onclick="setActive(this)">WORKFLOW 8 — CONTRACT & CONSULTANCY APPROV…</a></li>
+<li><a href="#diag11" onclick="setActive(this)">WORKFLOW 9 — ASSET ACQUISITION</a></li>
+<li><a href="#diag12" onclick="setActive(this)">WORKFLOW 10 — ASSET DISPOSAL</a></li>
+<li><a href="#diag13" onclick="setActive(this)">WORKFLOW 11 — LEAVE APPLICATION</a></li>
+<li><a href="#diag14" onclick="setActive(this)">WORKFLOW 12 — ACTING APPOINTMENT</a></li>
+<li><a href="#diag15" onclick="setActive(this)">WORKFLOW 13 — STAFF EXIT</a></li>
+<li><a href="#diag16" onclick="setActive(this)">WORKFLOW 14 — DATA ACCESS & SYSTEM PERMISS…</a></li>
+<li><a href="#diag17" onclick="setActive(this)">DELEGATION AUTHORITY ARCHITECTURE</a></li>
+<li><a href="#diag18" onclick="setActive(this)">ESCALATION WORKFLOW (Diagram 1)</a></li>
+<li><a href="#diag19" onclick="setActive(this)">ESCALATION WORKFLOW (Diagram 2)</a></li>
+
+      </ul>
+    </nav>
+    <div class="sidebar-counter">BNBR/FIN/AMWP/001/2026 &mdash; All data from source documents</div>
+  </aside>
+
+  <main id="mainContent">
+    <div class="welcome">
+      <div class="welcome-icon">&#x1F4CA;</div>
+      <div class="welcome-text">
+        <h2>BNBR ApprovalMax Workflow Architecture Package</h2>
+        <p>All 20 workflow diagrams sourced exclusively from the BNBR Workflow Plan Extract (7 May 2026) and Staff List (22 May 2026). Use the sidebar to navigate. Click <strong>&#x26F6; Fit</strong> on any diagram to toggle between fit-to-screen and full-scroll view.</p>
+      </div>
+    </div>
+
+    <section class="card" id="diag0">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>OUTPUT 1 — GOVERNANCE HIERARCHY MAP (Diagram 1)</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    BC["🏛️ BOARD CHAIRPERSON\nBoniface Chitayi\n(Ultimate Authority — Board Level)"]
+    BT["💼 BOARD TREASURER\nCPA Charles Muhia\n(Co-Approver — Tier 3 & Tier 4)"]
+    AED["🔑 ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\n(Final Approver — KES 100,000+\nMandatory Bank Signatory)"]
+    OHR["📋 OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\n(Operations Review — All Workflows)"]
+    AFM["📊 ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\n(Finance Approver — KES 5,000–99,999)"]
+    AFO["📄 ACTING FINANCE OFFICER\nJanerose Nduta Motende\n(Preparer — Bills, Journals, Payroll, Payments)"]
+    PM["📁 PROGRAMS MANAGER\nGeoffrey Omega Khira\n(Budget Holder — Programs)"]
+    ML["🔍 MERL LEAD\nJefferson Ponde Ochilo\n(Budget Holder — MERL & Beneficiary Data)"]
+    DS["👥 DEPARTMENTAL STAFF\n(Requestors / Initiators)"]
+    VOL["🤝 VOLUNTEERS\n(Limited Access — MERL Dept)"]
+
+    BC -->|"Co-approves Tier 4 (KES 1M+)\nBoard-level hirings\nExtended acting (6+ months)"| BT
+    BT -->|"Co-approves Tier 3 (KES 500K–999K)\nFinal signatory if AED unavailable"| AED
+    AED -->|"Delegates Tier 1 only (KES <100K)\nper formal delegation instruction"| OHR
+    AED -->|"Supervises finance function"| AFM
+    OHR -->|"Reviews all procurement\nHR and payroll review\nAsset and exit workflows"| AFM
+    AFM -->|"Approves bills, payments, procurement\nup to KES 99,999"| AFO
+    PM -->|"Budget holder approvals\nDonor report sign-off\nProcurement committee (KES 100K+)"| DS
+    ML -->|"MERL/beneficiary data approvals\nProcurement committee (KES 100K+)"| DS
+    AFO -->|"Prepares all financial documents"| DS
+    DS --> VOL
+
+    style BC fill:#1a1a2e,color:#fff,stroke:#e94560
+    style BT fill:#16213e,color:#fff,stroke:#e94560
+    style AED fill:#0f3460,color:#fff,stroke:#e94560
+    style OHR fill:#533483,color:#fff,stroke:#a8a8a8
+    style AFM fill:#533483,color:#fff,stroke:#a8a8a8
+    style AFO fill:#2d6a4f,color:#fff,stroke:#a8a8a8
+    style PM fill:#2d6a4f,color:#fff,stroke:#a8a8a8
+    style ML fill:#2d6a4f,color:#fff,stroke:#a8a8a8
+    style DS fill:#4a4e69,color:#fff,stroke:#a8a8a8
+    style VOL fill:#4a4e69,color:#ccc,stroke:#a8a8a8</div>
+  </div>
+</section>
+<section class="card" id="diag1">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>OUTPUT 1 — GOVERNANCE HIERARCHY MAP (Diagram 2)</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    S1["Staff Member\n(Requestor)"] -->|"submits"| L1
+
+    subgraph L1 ["First Level Approvers (Any ONE approves)"]
+        direction TB
+        S2["Line Manager /\nDept Head"]
+        S3["Programs Manager /\nMERL Lead"]
+        S4["Operations & HR\nManager"]
+        S5["Acting Finance\nManager"]
+    end
+
+    L1 -->|"approves ≤KES 99K\nforwards ≥KES 100K"| S6["Acting ED"]
+    S6 -->|"forwards ≥KES 500K"| S7["Board Treasurer"]
+    S7 -->|"forwards ≥KES 1M"| S8["Board Chairperson"]
+
+    style S1 fill:#4a4e69,color:#fff
+    style S2 fill:#4a4e69,color:#fff
+    style S3 fill:#2d6a4f,color:#fff
+    style S4 fill:#533483,color:#fff
+    style S5 fill:#533483,color:#fff
+    style S6 fill:#0f3460,color:#fff
+    style S7 fill:#16213e,color:#fff
+    style S8 fill:#1a1a2e,color:#fff
+    style L1 fill:none,stroke:#d0d4e8,stroke-width:2px,stroke-dasharray: 5 5</div>
+  </div>
+</section>
+<section class="card" id="diag2">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 1 — PURCHASE REQUISITION & PROCUREMENT APPROVAL</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Procurement Need Identified]) --> REQ
+
+    REQ["📝 REQUESTOR\nSubmit Purchase Requisition in ApprovalMax\nInclude: item description, quantity, estimated cost,\nbudget line, project code, required quotations\nAttach COI declaration\nAttach Data Sharing Agreement if vendor handles personal data"]
+
+    REQ --> SYSCK1{"🤖 ApprovalMax AUTO-CHECK\n① Project code = active funded project?\n② Required quotations attached per tier?\n③ Single-sourcing justification if applicable?"}
+
+    SYSCK1 -->|"❌ Incomplete"| REJ1(["🔴 RETURNED TO REQUESTOR\nResubmit with missing documents"])
+    
+    SYSCK1 -->|"✅ Passes"| SPLIT_CHK{"🛑 PROCUREMENT SPLIT CHECK\nApprovalMax flags if same supplier +\nsame project code + within 30 days\ncombined total crosses a threshold tier"}
+
+    SPLIT_CHK -->|"🚨 Split detected"| FLAG1["⚠️ FLAGGED: Potential procurement splitting\nReferred to Operations & HR Manager\nfor written justification"]
+    FLAG1 --> OHR_SPLIT{"Operations & HR Manager\nReviews split flag\nLegitimate or artificial split?"}
+    OHR_SPLIT -->|"Artificial split confirmed"| HALT(["🔴 HALT: Procurement rejected\nPolicy breach recorded"])
+    OHR_SPLIT -->|"Legitimate — justified in writing"| TIER_DET
+
+    SPLIT_CHK -->|"✅ No split"| TIER_DET
+
+    TIER_DET["💰 DETERMINE THRESHOLD & REQUIREMENTS\nTier 1: 0–4,999 (1 quote, single sourcing allowed)\nTier 2: 5,000–99,999 (3 quotes, Bid Analysis)\nTier 3: 100K–500K (3 quotes, LPO, 2-wk lead)\nTier 4: 500K–999K (3 quotes, LPO, 3-wk lead)\nTier 5: 1M+ (Full tender, Board award, 3-wk lead)"]
+
+    TIER_DET --> DEPT_REV
+
+    DEPT_REV["📋 STEP 2 — DEPARTMENT HEAD / PROGRAMS MGR / MERL LEAD\nGeoffrey Khira (Programs) / Jefferson Ponde (MERL) / Dept Head\n① Confirms programmatic need\n② Confirms budget availability (auto-checked vs Xero)\n③ Confirms procurement on annual plan OR\n   provides justification for unplanned procurement\nSLA: 24 hours"]
+
+    DEPT_REV --> D1{"Dept Head Decision"}
+    D1 -->|"❌ Return with comments"| REJ2(["🟡 RETURNED TO REQUESTOR\nCorrects and resubmits"])
+    D1 -->|"✅ Approved"| OHR_REV
+
+    OHR_REV["🏢 STEP 3 — OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\n① Correct quotation count for tier?\n② Prequalified suppliers used?\n③ Bid Analysis Form completed?\n④ COI declaration signed?\n⑤ Single-sourcing justification if applicable?\nSLA: 24 hours"]
+
+    OHR_REV --> D2{"Ops & HR Mgr Decision"}
+    D2 -->|"❌ Return"| REJ3(["🟡 RETURNED TO REQUESTOR\nComments attached"])
+    D2 -->|"✅ Approved"| FIN_REV
+
+    FIN_REV["💼 STEP 4 — ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\n① Budget coding correct?\n② Donor eligibility confirmed?\n③ VAT / WHT treatment verified?\n④ Supplier legitimacy confirmed?\n⑤ Payment only to entity on approved LPO?\n⑥ Data Sharing Agreement in place\n   where vendor handles personal data?\nSLA: 24 hours"]
+
+    FIN_REV --> D3{"Finance Mgr Decision"}
+    D3 -->|"❌ Query"| REJ4(["🟡 RETURNED TO FO\nActing FO resolves query"])
+    D3 -->|"✅ Approved"| LPO_GEN
+
+    LPO_GEN["🖨️ LPO GENERATED IN XERO\n(For procurements KES 5,000 and above)\nPayment entity locked to LPO entity"]
+
+    LPO_GEN --> TIER_GATE{"TIER APPROVAL GATE\nWhat tier is this procurement?"}
+
+    TIER_GATE -->|"Tier 1 or Tier 2\n(KES 0–99,999)"| APPROVED_T1T2["✅ APPROVED — Tier 1 / Tier 2\nFinal authority: Acting Finance Manager\n(Paul Ochieng')"]
+
+    TIER_GATE -->|"Tier 3\n(KES 100,000–500,000)"| AED_APPR["🔑 STEP 5a — ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nApproves via ApprovalMax mobile or web\nSLA: 48–72 hours"]
+    AED_APPR --> D4a{"AED Decision"}
+    D4a -->|"❌ Reject"| REJ5a(["🔴 REJECTED\nFull explanation required"])
+    D4a -->|"✅ Approved"| APPROVED_T3["✅ APPROVED — Tier 3\nFinal authority: Acting ED"]
+
+    TIER_GATE -->|"Tier 4\n(KES 500,001–999,999)"| AED_BT["🔑 STEP 5b — ACTING ED + BOARD TREASURER\nRebecca Mbaya + CPA Charles Muhia\nBoth approvals MANDATORY\nSLA: 48–72 hours"]
+    AED_BT --> D4b{"Both approved?"}
+    D4b -->|"❌ Either rejects"| REJ5b(["🔴 REJECTED\nExplanation required"])
+    D4b -->|"✅ Both approved"| APPROVED_T4["✅ APPROVED — Tier 4\nFinal authority: AED + Board Treasurer"]
+
+    TIER_GATE -->|"Tier 5\n(KES 1,000,000+)"| BOARD_FULL["🏛️ STEP 5c — FULL BOARD APPROVAL\nBoard Treasurer (CPA Charles Muhia)\n+ Board Chairperson (Boniface Chitayi)\nFull tendering process\nBoard award decision\nSLA: Up to 3 weeks"]
+    BOARD_FULL --> D4c{"Board Decision"}
+    D4c -->|"❌ Rejected"| REJ5c(["🔴 REJECTED\nBoard resolution documented"])
+    D4c -->|"✅ Approved"| APPROVED_T5["✅ APPROVED — Tier 5\nFinal authority: Board Treasurer + Board Chairperson"]
+
+    APPROVED_T1T2 --> GRN_STEP
+    APPROVED_T3 --> GRN_STEP
+    APPROVED_T4 --> GRN_STEP
+    APPROVED_T5 --> GRN_STEP
+
+    GRN_STEP["📦 GOODS / SERVICES RECEIVED\nUser department verifies against LPO / Contract\nSigns Goods Received Note (GRN)\nWithin 1 working day of receipt\nGRN passed to Finance within 1 working day"]
+
+    GRN_STEP --> GRN_UP["🤖 SYSTEM ACTION (ApprovalMax/Xero)\nGRN uploaded and linked to Xero PO\nBill Matching Workflow (Section 5.2) TRIGGERED"]
+
+    GRN_UP --> END_OK(["🟢 END: Procurement Complete\nAudit trail locked in ApprovalMax"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style HALT fill:#c1121f,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style REJ2 fill:#e07a5f,color:#fff
+    style REJ3 fill:#e07a5f,color:#fff
+    style REJ4 fill:#e07a5f,color:#fff
+    style REJ5a fill:#c1121f,color:#fff
+    style REJ5b fill:#c1121f,color:#fff
+    style REJ5c fill:#c1121f,color:#fff
+    style APPROVED_T1T2 fill:#2d6a4f,color:#fff
+    style APPROVED_T3 fill:#2d6a4f,color:#fff
+    style APPROVED_T4 fill:#2d6a4f,color:#fff
+    style APPROVED_T5 fill:#2d6a4f,color:#fff
+    style FLAG1 fill:#f4a261,color:#000
+    style TIER_DET fill:#264653,color:#fff
+    style BOARD_FULL fill:#1a1a2e,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag3">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 2 — SUPPLIER BILL (INVOICE) APPROVAL</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Supplier Invoice Received]) --> UPLOAD
+
+    UPLOAD["📄 STEP 1 — ACTING FINANCE OFFICER\nJanerose Nduta Motende\nReceives original supplier invoice\nUploads to ApprovalMax\nLinks to: approved LPO + signed GRN\nVerifies payment entity = entity named on LPO\n⚠️ Third-party payment? → Written justification required\nBill created in Xero as DRAFT"]
+
+    UPLOAD --> MATCH3{"🤖 SYSTEM — THREE-WAY MATCH\nInvoice amount vs LPO vs GRN\nTolerance: ±5%"}
+
+    MATCH3 -->|"❌ MISMATCH\nInvoice exceeds LPO value"| HOLD["🔴 AUTO-HELD\nActing Finance Officer notified\nMust attach written authorization\nfor additional cost before proceeding"]
+    HOLD --> AUTH_ADD{"Additional cost\nauthorized?"}
+    AUTH_ADD -->|"No"| REJECT_INV(["🔴 REJECTED\nInvoice returned to supplier"])
+    AUTH_ADD -->|"Yes — written auth attached"| MATCH3_OK
+
+    MATCH3 -->|"✅ MATCH within ±5%"| MATCH3_OK
+
+    MATCH3_OK["✅ THREE-WAY MATCH CONFIRMED\nProceeds to Finance Officer review"]
+
+    MATCH3_OK --> FO_REV["📋 STEP 3 — ACTING FINANCE OFFICER\nJanerose Nduta Motende (+ Acting Finance Manager review)\n① Confirm match is correct\n② Verify invoice date and payment terms\n③ Supplier Tax Compliance Certificate (where applicable)\n④ WHT treatment confirmed\n⑤ Attach WHT certificate\n⑥ Confirm payables classification (current or non-current)\n   per Finance Policy Section 6.3.1b\n⑦ Bill coding confirmed per Xero tracking categories\nSLA: 24 hours"]
+
+    FO_REV --> D1{"Finance Officer\nVerification"}
+    D1 -->|"❌ Issue found"| RESOLVE(["🟡 RETURNED TO PREPARER\nFO resolves & reattaches documents"])
+    D1 -->|"✅ Verified"| TIER_GATE
+
+    TIER_GATE{"💰 TIER GATE\nWhat is the invoice amount?\n⚠️ Finance Policy Section 4.2(b)(2):\nKES 100,000 exactly = Finance Manager tier\nOnly ABOVE KES 100,000 routes to Acting ED"}
+
+    TIER_GATE -->|"KES 5,000 to KES 100,000\n(inclusive — Tier 1)"| FM_APPR["💼 STEP 4a — ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\nSLA: 24 hours"]
+    FM_APPR --> D2a{"Finance Mgr Decision"}
+    D2a -->|"❌ Return"| REJ_T1(["🟡 RETURNED TO FO\nFO corrects"])
+    D2a -->|"✅ Approved"| XERO_T1["🤖 XERO UPDATE\nBill status → AWAITING PAYMENT"]
+    XERO_T1 --> END_OK1(["🟢 END: Tier 1 Bill Approved"])
+
+    TIER_GATE -->|"Above KES 100,000\n(Tiers 2, 3, 4)"| FM_OHR["💼 STEP 4b — ACTING FINANCE MANAGER\n+\n🏢 OPERATIONS & HR MANAGER\nBoth co-approve\nSLA: 24 hours"]
+    FM_OHR --> D2b{"Both approved?"}
+    D2b -->|"❌ Either returns"| REJ_T2(["🟡 RETURNED TO FO\nComments addressed"])
+    D2b -->|"✅ Both approved"| FINAL_TIER{"Determine Final Authority"}
+
+    FINAL_TIER -->|"Tier 2: Up to 499,999"| AED_T2["🔑 STEP 5 — ACTING EXECUTIVE DIRECTOR\nSLA: 48 hours"]
+    AED_T2 --> D3a{"AED Decision"}
+    D3a -->|"❌ Rejected"| REJ_T2b(["🔴 REJECTED\nExplanation required"])
+    D3a -->|"✅ Approved"| XERO_T2["🤖 XERO UPDATE\nBill status → AWAITING PAYMENT"]
+    XERO_T2 --> END_OK2(["🟢 END: Tier 2 Bill Approved"])
+
+    FINAL_TIER -->|"Tier 3: 500K–999,999"| AED_BT["🔑 STEP 5 — ACTING ED + BOARD TREASURER\nBoth MANDATORY\nSLA: 48 hours"]
+    AED_BT --> D3b{"Both approved?"}
+    D3b -->|"❌ Either rejects"| REJ_T3(["🔴 REJECTED"])
+    D3b -->|"✅ Both approved"| XERO_T3["🤖 XERO UPDATE\nBill status → AWAITING PAYMENT"]
+    XERO_T3 --> END_OK3(["🟢 END: Tier 3 Bill Approved"])
+
+    FINAL_TIER -->|"Tier 4: 1,000,000+"| BOARD_ALL["🏛️ STEP 5 — ACTING ED + BOARD TREASURER + BOARD CHAIRPERSON\nAll THREE MANDATORY\nSLA: 48 hours (up to 3 weeks for Board)"]
+    BOARD_ALL --> D3c{"All three approved?"}
+    D3c -->|"❌ Any rejection"| REJ_T4(["🔴 REJECTED\nBoard resolution recorded"])
+    D3c -->|"✅ All approved"| XERO_T4["🤖 XERO UPDATE\nBill status → AWAITING PAYMENT"]
+    XERO_T4 --> END_OK4(["🟢 END: Tier 4 Bill Approved"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK1 fill:#2d6a4f,color:#fff
+    style END_OK2 fill:#2d6a4f,color:#fff
+    style END_OK3 fill:#2d6a4f,color:#fff
+    style END_OK4 fill:#2d6a4f,color:#fff
+    style REJECT_INV fill:#c1121f,color:#fff
+    style REJ_T1 fill:#e07a5f,color:#fff
+    style REJ_T2 fill:#e07a5f,color:#fff
+    style REJ_T2b fill:#c1121f,color:#fff
+    style REJ_T3 fill:#c1121f,color:#fff
+    style REJ_T4 fill:#c1121f,color:#fff
+    style HOLD fill:#f4a261,color:#000
+    style BOARD_ALL fill:#1a1a2e,color:#fff
+    style MATCH3 fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag4">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 3 — PAYMENT APPROVAL & EXECUTION (Diagram 1)</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Bills marked AWAITING PAYMENT in Xero]) --> BATCH
+
+    BATCH["📋 STEP 1 — ACTING FINANCE OFFICER\nJanerose Nduta Motende\nPrepares payment batch in Xero:\n① Selects approved bills\n② Confirms bank details against approved vendor list\n③ Verifies payment is to entity named on approved LPO\n⚠️ Third-party payment? → Written authorization required\n   and attached in ApprovalMax\nPayment batch forwarded to ApprovalMax approval gate"]
+
+    BATCH --> BANK_VER["📋 STEP 2 — BANK DETAIL VERIFICATION\nActing Finance Officer\n① Verifies bank account details match\n   approved vendor registration\n② Any bank detail change? → Requires Operations & HR\n   Manager re-approval of vendor record BEFORE processing\n   (Finance Policy Section 4.7)"]
+
+    BANK_VER --> BANK_CHG{"Bank details\nchanged from\nmaster vendor file?"}
+    BANK_CHG -->|"YES — details differ"| OHR_VENDOR["🏢 OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\nRe-approves vendor record\nFlag raised in ApprovalMax\nSLA: Same day"]
+    OHR_VENDOR --> CHG_OK{"Re-approval\ngranted?"}
+    CHG_OK -->|"❌ Rejected"| HALT_PAY(["🔴 HALT: Payment blocked\nVendor record not validated"])
+    CHG_OK -->|"✅ Approved"| FM_REVIEW
+    BANK_CHG -->|"NO — details match"| FM_REVIEW
+
+    FM_REVIEW["💼 STEP 3 — ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\nReviews payment batch:\n① Total amount correct?\n② All payees verified?\n③ Supporting bill references complete?\n④ Threshold tier compliance confirmed?\n⚠️ Returns ENTIRE BATCH if any single item queried\nAll queries resolved before resubmission\nSLA: 24 hours"]
+
+    FM_REVIEW --> D1{"Finance Manager\nDecision"}
+    D1 -->|"❌ Queries raised"| RESOLVE(["🟡 BATCH RETURNED TO FO\nFO resolves all queries & resubmits full batch"])
+    D1 -->|"✅ Approved"| TIER_GATE
+
+    TIER_GATE{"💰 PAYMENT TIER GATE\nWhat is the payment batch total?"}
+
+    TIER_GATE -->|"KES 0–99,999\n(Tier 1)"| SCHED_CHK["⏰ PAYMENT SCHEDULE CHECK\n(Finance SWOP Section 9)\nBank transfer? → Tue/Thu only\nM-Pesa B2C? → Mon/Wed/Fri only\nActing ED mandatory bank signatory"]
+
+    TIER_GATE -->|"KES 100,001–499,999\n(Tier 2)"| AED_T2["🔑 STEP 4a — ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nSLA: 48 hours"]
+    AED_T2 --> D2a{"AED Decision"}
+    D2a -->|"❌ Rejected"| REJ_T2(["🔴 REJECTED\nExplanation documented"])
+    D2a -->|"✅ Approved"| SCHED_CHK
+
+    TIER_GATE -->|"KES 500,001–999,999\n(Tier 3)"| AED_BT["🔑 STEP 4b — ACTING ED + BOARD TREASURER\nBoth MANDATORY\nSLA: 48 hours"]
+    AED_BT --> D2b{"Both approved?"}
+    D2b -->|"❌ Either rejects"| REJ_T3(["🔴 REJECTED"])
+    D2b -->|"✅ Both approved"| SCHED_CHK
+
+    TIER_GATE -->|"KES 1,000,000+\n(Tier 4)"| BOARD_ALL["🏛️ STEP 4c — ACTING ED + BOARD TREASURER + BOARD CHAIRPERSON\nAll THREE MANDATORY\nSLA: 48 hours (Board up to 3 weeks)"]
+    BOARD_ALL --> D2c{"All three approved?"}
+    D2c -->|"❌ Any rejection"| REJ_T4(["🔴 REJECTED\nBoard resolution documented"])
+    D2c -->|"✅ All approved"| SCHED_CHK
+    
+    SCHED_CHK --> EXEC(["🟢 EXECUTED\nActing Finance Officer executes\nAudit trail in ApprovalMax"])
+
+    style START fill:#2d6a4f,color:#fff
+    style EXEC fill:#2d6a4f,color:#fff
+    style HALT_PAY fill:#c1121f,color:#fff
+    style REJ_T2 fill:#c1121f,color:#fff
+    style REJ_T3 fill:#c1121f,color:#fff
+    style REJ_T4 fill:#c1121f,color:#fff
+    style RESOLVE fill:#e07a5f,color:#fff
+    style BOARD_ALL fill:#1a1a2e,color:#fff
+    style TIER_GATE fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag5">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 3 — PAYMENT APPROVAL & EXECUTION (Diagram 2)</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart LR
+    MON["📅 MONDAY\nM-Pesa B2C only"]
+    TUE["📅 TUESDAY\nBank Transfers only"]
+    WED["📅 WEDNESDAY\nM-Pesa B2C only"]
+    THU["📅 THURSDAY\nBank Transfers only"]
+    FRI["📅 FRIDAY\nM-Pesa B2C only"]
+    SAT["📅 SAT–SUN\n🚫 No payments"]
+    CASH["🚫 CASH PAYMENTS\nPROHIBITED — ALL DAYS"]
+
+    MON --- WED --- FRI
+    TUE --- THU
+
+    style MON fill:#264653,color:#fff
+    style WED fill:#264653,color:#fff
+    style FRI fill:#264653,color:#fff
+    style TUE fill:#0f3460,color:#fff
+    style THU fill:#0f3460,color:#fff
+    style SAT fill:#4a4e69,color:#ccc
+    style CASH fill:#c1121f,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag6">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 4 — CASH REQUISITION, IMPREST & PETTY CASH</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Cash / Imprest Need Identified]) --> TYPE{"Type of\nRequest?"}
+
+    TYPE -->|"Field Imprest / Per Diem"| FIELD_REQ
+    TYPE -->|"Petty Cash Replenishment\n(Float at 75% utilisation)"| PETTY_REQ
+
+    FIELD_REQ["📝 STEP 1 — FIELD STAFF / PROGRAMME ASSISTANT\nSubmit Cash / Imprest Requisition in ApprovalMax\nInclude:\n① Purpose\n② Amount\n③ Activity\n④ Project code\n⑤ Expected retirement date"]
+
+    PETTY_REQ["📝 STEP 1 — PETTY CASH CUSTODIAN\n(Operations & HR Department)\nSubmit expense log with:\n① All vouchers\n② All receipts\nWhen float reaches 75% utilisation\n(Nairobi: KES 40,000 float / KES 5,000 max single\nKilifi/Bungoma: KES 10,000 float / KES 2,500 max single)"]
+
+    FIELD_REQ --> ADV_CHK{"🤖 SYSTEM CHECK\nDoes staff member have\nan UNRETIRED advance?"}
+    ADV_CHK -->|"YES — outstanding advance exists"| BLOCK(["🔴 BLOCKED\nNew request blocked\nStaff must retire existing advance first"])
+
+    ADV_CHK -->|"NO — no outstanding advance"| LINE_MGR_REV
+
+    PETTY_REQ --> LINE_MGR_REV
+
+    LINE_MGR_REV["📋 STEP 2 — LINE MANAGER (MERL LEAD / PROGRAMS MANAGER / OPS & HR MANAGER)\nJefferson Ponde (MERL) / Geoffrey Khira (Programs) / Jachtolinah Nzive (Ops)\n① Confirms programmatic need\n② Confirms budget availability\n③ Checks outstanding unretired imprest\nSLA: 24 hours"]
+
+    LINE_MGR_REV --> D1{"Line Manager\nDecision"}
+    D1 -->|"❌ Return"| REJ1(["🟡 RETURNED TO REQUESTOR\nRequestor corrects and resubmits"])
+    D1 -->|"✅ Approved"| FO_CHECK
+
+    FO_CHECK["💼 STEP 3 — ACTING FINANCE OFFICER + ACTING FINANCE MANAGER\nJanerose Nduta Motende / Paul Celvins Ochieng'\nField: Checks budget, verifies documentation, confirms no outstanding advances\nPetty Cash: Reviews ALL expense log vouchers and receipts\nSLA: 24 hours"]
+
+    FO_CHECK --> D2{"Finance Check\nResult"}
+    D2 -->|"❌ Documentation incomplete"| REJ2(["🟡 RETURNED TO REQUESTOR\nDocumentation corrected"])
+    D2 -->|"✅ Approved"| AMOUNT_GATE
+
+    AMOUNT_GATE{"💰 Is imprest amount\nABOVE KES 20,000?"}
+
+    AMOUNT_GATE -->|"YES — above KES 20,000"| OHR_SO["🏢 STEP 4 — OPERATIONS & HR MANAGER SIGN-OFF\nJachtolinah Ndinda Nzive\nSign-off required for imprest above KES 20,000\nSLA: Same day"]
+    OHR_SO --> D3{"Ops & HR Mgr\nSign-off?"}
+    D3 -->|"❌ Declined"| REJ3(["🔴 RETURNED TO REQUESTOR\nJustification required"])
+    D3 -->|"✅ Signed off"| PAY_RELEASE
+
+    AMOUNT_GATE -->|"NO — KES 20,000 or below"| PAY_RELEASE
+
+    PAY_RELEASE["💳 PAYMENT RELEASED\nVia M-Pesa or bank transfer ONLY\nPer Finance SWOP payment schedule\n(Bank: Tues/Thurs | M-Pesa: Mon/Wed/Fri)\n🚫 Cash disbursements PROHIBITED\nAdvance recorded as manual journal in Xero\nAudit trail in ApprovalMax"]
+
+    PAY_RELEASE --> RETIRE_TRACK["⏰ RETIREMENT CLOCK STARTS\nApprovalMax triggers reminder at Day 3\nRetirement deadlines:\n• Per diems → 5 working days after return\n• In-county field activities → 7 working days\n• Travel → 14 working days"]
+
+    RETIRE_TRACK --> RETIRE{"Staff Retires\nAdvance?"}
+
+    RETIRE -->|"YES — on time\nReceipts + accountability\nform uploaded"| FO_RETIRE["Acting Finance Officer\nReviews and approves retirement\nXero manual journal reversed/cleared"]
+    FO_RETIRE --> END_OK(["🟢 END: Advance Retired\nAudit trail complete"])
+
+    RETIRE -->|"NO / LATE"| LATE_FLAG(["⚠️ LATE ACCOUNTABILITY\nSurcharge applied\nPay withheld pending accountability"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style BLOCK fill:#c1121f,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style REJ2 fill:#e07a5f,color:#fff
+    style REJ3 fill:#c1121f,color:#fff
+    style LATE_FLAG fill:#f4a261,color:#000
+    style PAY_RELEASE fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag7">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 5 — PAYROLL APPROVAL</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Monthly Payroll Cycle\nBy 20th of each month]) --> PREP
+
+    PREP["📊 STEP 1 — OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\nPrepares monthly payroll summary\nExports payroll journal for Xero import\nIncorporates approved changes:\n• Acting allowances (HR Policy Section 3.4)\n• Leave without pay deductions (HR Policy Section 5.5)\n• SRBS contributions (HR Policy Section 7)\n⚠️ All payroll data = Sensitive Personal Data\n   (Data Protection Policy Section 6.6)\n   Access restricted: HR, Finance, Acting ED ONLY\nPayroll journal uploaded to ApprovalMax as DRAFT\nDeadline: By 20th of each month"]
+
+    PREP --> COLA_CHK{"Is this\nJanuary payroll?\n(Annual COLA\nadjustment)"}
+
+    COLA_CHK -->|"YES — January COLA"| COLA_APPR["🔑 ADDITIONAL STEP — ANNUAL COLA\nRequires CO-APPROVAL:\n① Acting ED (Rebecca Mbaya)\n② Board Treasurer (CPA Charles Muhia)\nBefore payroll proceeds\n(HR Policy Section 3.8)"]
+    COLA_APPR --> D_COLA{"COLA co-approved?"}
+    D_COLA -->|"❌ Not approved"| HOLD_COLA["🔴 Payroll HELD\nPayroll with previous rates until\nCOLA is formally approved"]
+    D_COLA -->|"✅ Both approved"| FM_REVIEW
+
+    COLA_CHK -->|"NO"| FM_REVIEW
+
+    FM_REVIEW["💼 STEP 2 — ACTING FINANCE MANAGER + ACTING FINANCE OFFICER\nPaul Celvins Ochieng' / Janerose Nduta Motende\n① Verify each employee record vs signed contract\n② Check pay increment letters applied\n③ Acting allowance authorizations confirmed\n④ Current statutory deductions per applicable legislation\n⑤ Voluntary deductions correct\n⑥ Bank account details verified\n⑦ Flag any variance\nDeadline: By 22nd of each month"]
+
+    FM_REVIEW --> D1{"Finance Review\nResult"}
+    D1 -->|"❌ Variance found"| FLAG_VAR(["🟡 RETURNED TO HR\nOperations & HR Manager notified to correct & resubmit"])
+    D1 -->|"✅ No variance"| OHR_APPR
+
+    OHR_APPR["🏢 STEP 3 — OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\nApproves payroll confirming:\n① New appointments correctly reflected\n② Terminations correctly reflected\n③ Leave without pay correctly deducted\nNote: Staff appointments per management-approved\npositions (management hires) or Board-approved\nhirings (Board-level positions)\nDeadline: By 23rd of each month"]
+
+    OHR_APPR --> D2{"Ops & HR Mgr\nDecision"}
+    D2 -->|"❌ Return"| REJ_HR(["🟡 RETURNED TO PREPARER\nCorrections required"])
+    D2 -->|"✅ Approved"| XERO_POST["🤖 SYSTEM ACTION\nApproval in ApprovalMax\nPayroll journal posted to Xero"]
+
+    XERO_POST --> SEG_CHK{"🤖 AUTOMATED SEGREGATION RULE\n(Finance Policy Section 2.2.3(a))\nApprovalMax checks:\nIs Preparer = Acting ED (Rebecca Mbaya)?"}
+
+    SEG_CHK -->|"YES — Preparer = Acting ED\nSelf-approval prohibited"| BT_ROUTE["🔄 AUTOMATED REROUTE to BOARD TREASURER\nCPA Charles Muhia\nApprovalMax skips ED Approval node\nand routes directly to Board Treasurer\nNo manual intervention required\n(Finance Policy Section 2.2.3(a))"]
+    BT_ROUTE --> BT_APPR{"Board Treasurer\nDecision"}
+    BT_APPR -->|"❌ Declined"| REJ_BT(["🔴 REJECTED\nReturned for correction"])
+    BT_APPR -->|"✅ Approved"| BANK_RELEASE
+
+    SEG_CHK -->|"NO — Preparer ≠ Acting ED\nNo conflict"| AED_APPR
+
+    AED_APPR["🔑 STEP 4 — ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nAuthorizes payroll payment batch\nFinal approval in ApprovalMax\nDeadline: By 25th of each month"]
+
+    AED_APPR --> D3{"AED Decision"}
+    D3 -->|"❌ Declined"| REJ_AED(["🔴 REJECTED\nIssues corrected and resubmitted"])
+    D3 -->|"✅ Authorized"| BANK_RELEASE["💳 PAYROLL BATCH RELEASED TO BANK\nvia Xero\nDual bank signatures applied\n(Finance Policy Section 4.4)\nActing ED mandatory bank signatory\nDeadline: 25th of each month"]
+
+    BANK_RELEASE --> STATUTORY["📋 STEP 5 — ACTING FINANCE OFFICER + ACTING FINANCE MANAGER\nJanerose Nduta Motende / Paul Celvins Ochieng'\n① File payslips\n② File statutory returns (per statutory deadlines)\n③ Upload evidence of remittances to Xero document store\n④ Remit SRBS contributions per scheme terms\nAll documents retained 10 years\n(Finance Policy Section 7.4)"]
+
+    STATUTORY --> END_OK(["🟢 END: Payroll Complete\nAudit trail in ApprovalMax\nStatutory returns filed"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style HOLD_COLA fill:#f4a261,color:#000
+    style REJ_BT fill:#c1121f,color:#fff
+    style REJ_AED fill:#c1121f,color:#fff
+    style FLAG_VAR fill:#e07a5f,color:#fff
+    style SEG_CHK fill:#264653,color:#fff
+    style BT_ROUTE fill:#533483,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag8">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 6 — JOURNAL ENTRY APPROVAL</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Manual Journal Entry Required]) --> FO_PREP
+
+    FO_PREP["📄 STEP 1 — ACTING FINANCE OFFICER\nJanerose Nduta Motende\nPrepares manual journal in Xero:\n① Narration included\n② Debit and credit entries\n③ Project tracking category\n④ Supporting document attached\n   (Finance Policy Section 7.2a)\n⚠️ Payroll data in journals subject to Data Protection\n   Policy access restrictions (Section 6.6)\nJournal saved as DRAFT in Xero\nForwarded to ApprovalMax"]
+
+    FO_PREP --> CONTENT_CHK{"Journal type?"}
+
+    CONTENT_CHK -->|"Payroll journal"| PAYROLL_ACCESS["⚠️ PAYROLL ACCESS CONTROL\nOnly accessible to:\n• HR\n• Finance\n• Acting ED\n(Data Protection Policy Section 6.6)"]
+    PAYROLL_ACCESS --> OHR_REV
+
+    CONTENT_CHK -->|"Non-payroll journal"| OHR_REV
+
+    OHR_REV["🏢 STEP 2 — OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\nReviews journal for:\n① Accuracy\n② Completeness\n③ Proper donor coding\nSLA: 24 hours"]
+
+    OHR_REV --> D1{"Ops & HR Mgr\nDecision"}
+    D1 -->|"❌ Return with queries"| REJ1["🟡 RETURNED\nActing Finance Officer corrects\nand resubmits"]
+    REJ1 --> FO_PREP
+    D1 -->|"✅ Approved"| AMOUNT_GATE
+
+    AMOUNT_GATE{"💰 Journal Amount or Type?\n① Above KES 100,000?\n   OR\n② Adjusting donor fund balances?"}
+
+    AMOUNT_GATE -->|"NO — Below KES 100,000\nNOT adjusting donor funds"| POST_T1["🤖 JOURNAL POSTED TO XERO\nLocked from further editing\nAudit trail complete"]
+    POST_T1 --> END_OK1(["🟢 END: Journal Posted\nApproved by Operations & HR Manager"])
+
+    AMOUNT_GATE -->|"YES — Above KES 100,000\nOR adjusting donor fund balances"| AED_APPR["🔑 STEP 3 — ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nApproves journals above KES 100,000\nor those adjusting donor fund balances\nSLA: 24 hours"]
+
+    AED_APPR --> D2{"AED Decision"}
+    D2 -->|"❌ Rejected"| REJ2["🔴 REJECTED\nJournal returned\nExplanation required"]
+    D2 -->|"✅ Approved"| POST_T2["🤖 JOURNAL POSTED TO XERO\nLocked from further editing\nFull audit trail in ApprovalMax"]
+    POST_T2 --> END_OK2(["🟢 END: Journal Posted\nApproved by Acting ED"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK1 fill:#2d6a4f,color:#fff
+    style END_OK2 fill:#2d6a4f,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style REJ2 fill:#c1121f,color:#fff
+    style PAYROLL_ACCESS fill:#533483,color:#fff
+    style AMOUNT_GATE fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag9">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 7 — BUDGET ADJUSTMENT APPROVAL</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Budget Adjustment Needed]) --> INITIATE
+
+    INITIATE["📝 STEP 1 — PROGRAMS MANAGER or ACTING FINANCE OFFICER\nGeoffrey Khira (Programs Mgr) / Janerose Nduta Motende (Acting Finance Officer)\nSubmits budget adjustment request specifying:\n① Budget lines affected\n② Amounts\n③ Justification\n④ Donor consent reference (where applicable)\nSystem flags if donor notification is required"]
+
+    INITIATE --> FM_REV["💼 STEP 2 — ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\n① Reviews financial impact\n② Confirms donor budget flexibility\n③ Assesses whether adjustment creates material variance\n   requiring Board communication\n④ Prepares summary of impact on all affected budget lines\nSLA: 24 hours"]
+
+    FM_REV --> D1{"Finance Manager\nDecision"}
+    D1 -->|"❌ Return"| REJ1["🟡 RETURNED\nInitiator corrects and resubmits"]
+    REJ1 --> INITIATE
+    D1 -->|"✅ Reviewed"| ODC_CHK
+
+    ODC_CHK{"💰 MATERIALITY THRESHOLD\nDoes the adjustment exceed\n10% of the original budget line?"}
+
+    ODC_CHK -->|"YES — exceeds 10%"| ODC_FLAG["⚠️ Board ODC Notification triggered\nActing Finance Manager flags\nadjustment to Acting ED\nfor Board ODC communication"]
+    ODC_FLAG --> AED_APPR
+
+    ODC_CHK -->|"NO — within 10%"| AED_APPR
+
+    AED_APPR["🔑 STEP 3 — ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nApproves ALL budget adjustments\nAnnual budget submitted to Board by 31 December\nSLA: 48 hours"]
+
+    AED_APPR --> D2{"AED Decision"}
+    D2 -->|"❌ Rejected"| REJ2["🔴 REJECTED\nExplanation required\nBudget lines unchanged"]
+    D2 -->|"✅ Approved"| DONOR_CHK
+
+    DONOR_CHK{"Is this a\ndonor-restricted grant\nadjustment?"}
+
+    DONOR_CHK -->|"NO — internal budget"| XERO_UPDATE["🤖 SYSTEM ACTION\nActing Finance Manager approval in ApprovalMax\nXero tracking budget updated\nBoard ODC notification sent if material variance\nAudit trail complete"]
+    XERO_UPDATE --> END_OK1(["🟢 END: Budget Adjusted\nXero tracking category updated"])
+
+    DONOR_CHK -->|"YES — donor-restricted"| DONOR_APPR["📋 STEP 4 — DONOR APPROVAL\nActing ED + Programs Manager (Geoffrey Khira)\nObtain written donor approval BEFORE implementing adjustment\nDonor approval document attached in ApprovalMax\nCannot proceed without donor written consent"]
+
+    DONOR_APPR --> D3{"Donor approval\nreceived?"}
+    D3 -->|"❌ Donor declines"| REJ3["🔴 ADJUSTMENT BLOCKED\nCannot proceed without donor consent\nAED and Programs Mgr notified"]
+    D3 -->|"✅ Donor approves\n(written consent attached)"| DONOR_XERO["🤖 SYSTEM ACTION\nActing Finance Officer adjusts Xero\ndonor tracking category budget\nDonor approval document on file in ApprovalMax"]
+    DONOR_XERO --> END_OK2(["🟢 END: Donor Budget Adjusted\nXero tracking category updated\nDonor consent on file"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK1 fill:#2d6a4f,color:#fff
+    style END_OK2 fill:#2d6a4f,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style REJ2 fill:#c1121f,color:#fff
+    style REJ3 fill:#c1121f,color:#fff
+    style ODC_FLAG fill:#f4a261,color:#000
+    style DONOR_CHK fill:#264653,color:#fff
+    style ODC_CHK fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag10">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 8 — CONTRACT & CONSULTANCY APPROVAL</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Contract or Consultancy Required]) --> LINE_MGR
+
+    LINE_MGR["📝 STEP 1 — LINE MANAGER\nSubmits contract request specifying:\n① Position / Service\n② Person / Organization\n③ Reason for engagement\n④ Contract period\n⑤ Required quotations per procurement tier\n⚠️ Does contract involve personal data processing?\n   → Data Sharing Agreement REQUIRED\n   (Data Protection Policy Section 10.1.3)"]
+
+    LINE_MGR --> FM_REV["💼 STEP 2 — ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\n① Confirms budget availability\n② Fee consistent with scales\n③ Donor rules compliance\n④ WHT implications verified\n⑤ Required quotations/bids attached per procurement tier\nSLA: 24 hours"]
+
+    FM_REV --> D1e{"Finance Mgr\nDecision"}
+    D1e -->|"❌ Query"| REJ1(["🟡 RETURNED TO LINE MANAGER\nLine Manager resolves & resubmits"])
+    D1e -->|"✅ Approved"| OHR_REV
+
+    OHR_REV["🏢 STEP 3 — OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\nReviews contract for HR & Policy compliance:\n① Probation/leave/notice/medical (if employment)\n② Data Protection Policy & Data Sharing Agreement\n③ COI obligation included\nSLA: 24 hours"]
+
+    OHR_REV --> D2e{"Ops & HR Mgr\nDecision"}
+    D2e -->|"❌ Return"| REJ2(["🟡 RETURNED TO LINE MANAGER\nContract terms corrected"])
+    D2e -->|"✅ Cleared"| FINAL_GATE{"Determine Final Authority\n(Based on Contract Type & Value)"}
+
+    FINAL_GATE -->|"Management-level Employment\nor Non-HR < 1,000,000"| AED_SIGN["🔑 STEP 4 — ACTING ED\nRebecca Mbaya\nApproves & signs contract\nSLA: 48 hours"]
+    AED_SIGN --> END_OK(["🟢 END: Contract Executed\nApprovalMax + Xero updated\nPayroll triggered if employment"])
+
+    FINAL_GATE -->|"Board-level Employment\nor Non-HR ≥ 1,000,000"| BOARD_APPR["🏛️ BOARD APPROVAL GATE\nBoard Treasurer + Board Chairperson\nSLA: 72 hours"]
+    BOARD_APPR --> D3{"Board Decision"}
+    D3 -->|"❌ Rejected"| REJ3(["🔴 REJECTED\nBoard resolution documented"])
+    D3 -->|"✅ Approved"| AED_SIGN_HIGH["🔑 ACTING ED + CHAIRPERSON\nSign high-value/strategic contracts\nSLA: 48 hours"]
+    AED_SIGN_HIGH --> END_OK
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style REJ2 fill:#e07a5f,color:#fff
+    style REJ3 fill:#c1121f,color:#fff
+    style BOARD_APPR fill:#1a1a2e,color:#fff
+    style FINAL_GATE fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag11">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 9 — ASSET ACQUISITION</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Asset Acquisition Required]) --> INIT
+
+    INIT["📝 STEP 1 — INITIATING STAFF MEMBER\nSubmits asset acquisition request via\nPurchase Requisition Workflow (Section 5.1)\nFlagged as: CAPITAL EXPENDITURE\nIncludes:\n① Asset description\n② Estimated cost\n③ Useful life\n④ Depreciation rate (Finance Policy Section 6.2.1a-ii)\n⑤ Donor or funding source"]
+
+    INIT --> COST_GATE{"💰 Estimated Cost\nvs KES 30,000\nCapitalization Threshold\n(Finance Policy Section 6.2.1a)"}
+
+    COST_GATE -->|"Below KES 30,000\nOR useful life < 3 years"| EXPENSE["📋 PROCESS AS EXPENSE\nDo NOT flag as capital\nProcess via standard procurement\nNOT asset register"]
+    EXPENSE --> STD_PROC(["→ Refer to Procurement Workflow\n(WF01) for relevant tier"])
+
+    COST_GATE -->|"KES 30,000 or above\nAND useful life > 3 years"| FM_CONFIRM
+
+    FM_CONFIRM["💼 STEP 2 — ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\nConfirms:\n① Cost meets KES 30,000 capitalization threshold\n② Correct depreciation rate applied\n③ Donor rules on asset ownership at grant end confirmed\n④ Asset to be tagged with unique ID for Xero register\nSLA: 24 hours"]
+
+    FM_CONFIRM --> D1{"Finance Manager\nDecision"}
+    D1 -->|"❌ Query / Below threshold"| REJ1["🟡 RETURNED\nReclassify as expense or correct data"]
+    REJ1 --> INIT
+    D1 -->|"✅ Confirmed as CapEx"| PROC_WF["🔄 PROCUREMENT WORKFLOW APPLIED\nSection 5.1 — per applicable threshold tier\nAll procurement controls apply:\n• Quotation requirements\n• Bid Analysis Form\n• COI declaration\n• LPO generated"]
+
+    PROC_WF --> GRN["📦 GOODS RECEIVED\nOperations & HR Manager\nJachtolinah Ndinda Nzive\nVerifies asset against specification\nSigns Goods Received Note (GRN)\nSLA: Per procurement tier SLA"]
+
+    GRN --> REGISTER["🤖 ASSET REGISTERED IN XERO\nActing Finance Officer + Operations & HR Manager\nXero entry includes:\n① Unique Asset ID\n② Cost\n③ Date of acquisition\n④ Donor code\n⑤ Depreciation rate\n⑥ Location\nAsset register audit trail locked in ApprovalMax"]
+
+    REGISTER --> AUDIT_CHK["📋 ONGOING CONTROLS\n• Quarterly inventory audits\n• Unannounced spot checks\n• Annual physical inventory count\n(Asset Policy BNBR/OPS/002/V1)"]
+
+    AUDIT_CHK --> END_OK(["🟢 END: Asset Acquired & Registered\nXero asset register updated\nAudit trail complete"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style EXPENSE fill:#264653,color:#fff
+    style STD_PROC fill:#4a4e69,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style COST_GATE fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag12">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 10 — ASSET DISPOSAL</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Asset Identified for Disposal]) --> OHR_SUBMIT
+
+    OHR_SUBMIT["📋 STEP 1 — OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\nSubmits Disposal Request including:\n① Asset ID from Xero register\n② Condition assessment\n③ Estimated current market value\n④ Recommended disposal method\n   (staff purchase / public auction / donation)\nDisposal request linked to Xero asset register\nValuation report attached"]
+
+    OHR_SUBMIT --> DONOR_FLAG{"Is the asset\nDONOR-FUNDED?"}
+    DONOR_FLAG -->|"YES"| DONOR_NOTIF["⚠️ DONOR NOTIFICATION FLAG RAISED\nDonor may need to be notified\nbefore disposal can proceed\n(confirm per donor agreement terms)"]
+    DONOR_NOTIF --> FM_REVIEW
+    DONOR_FLAG -->|"NO"| FM_REVIEW
+
+    FM_REVIEW["💼 STEP 2 — ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\n① Confirms asset is on Xero register\n② Calculates accumulated depreciation\n③ Calculates Net Book Value (NBV)\n   per Finance Policy depreciation schedule\n④ Assesses donor implications\n⑤ Assesses tax implications\nSLA: 24 hours"]
+
+    FM_REVIEW --> D1{"Finance Manager\nDecision"}
+    D1 -->|"❌ Asset not on register / issue"| REJ1(["🟡 RETURNED TO HR\nOps & HR Manager corrects Disposal Request"])
+    D1 -->|"✅ NBV confirmed"| COMMITTEE
+
+    COMMITTEE["👥 STEP 3 — DISPOSAL COMMITTEE\nOps & HR Mgr + Finance Mgr + Acting ED\n① Assesses physical condition & NBV\n② Sets reserve price\n③ Selects Method:\n   • Staff Purchase (internal first)\n   • Public Auction (proceeds to bank)\n   • Donation (recipient documented)\nSLA: 48 hours"]
+
+    COMMITTEE --> VALUE_GATE
+
+    VALUE_GATE{"💰 APPROVAL GATE\nBased on ORIGINAL PURCHASE PRICE\n(not NBV)"}
+
+    VALUE_GATE -->|"Up to KES 99,999"| FM_APPR["💼 ACTING FINANCE MANAGER\nPaul Celvins Ochieng'\nFinal approval\nSLA: Per procurement tier SLA"]
+    VALUE_GATE -->|"KES 100,000–500,000"| AED_APPR["🔑 ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nFinal approval"]
+    VALUE_GATE -->|"KES 500,001–999,999"| AED_BT["🔑 ACTING ED + BOARD TREASURER\nRebecca Mbaya + CPA Charles Muhia\nBoth required"]
+    VALUE_GATE -->|"KES 1,000,000+"| BOARD_ALL["🏛️ BOARD TREASURER + BOARD CHAIRPERSON\nCPA Charles Muhia + Boniface Chitayi\nBoth required"]
+
+    FM_APPR --> FINAL_DEC{"Final Decision"}
+    AED_APPR --> FINAL_DEC
+    AED_BT --> FINAL_DEC
+    BOARD_ALL --> FINAL_DEC
+
+    FINAL_DEC -->|"❌ Rejected"| REJ2(["🔴 REJECTED\nDisposal blocked"])
+    FINAL_DEC -->|"✅ Approved"| EXECUTE
+
+    EXECUTE["✅ DISPOSAL EXECUTED\nOperations & HR Manager + Finance Officer\nAll proceeds deposited to BNBR bank account\nDocumentation retained 10 years\n(Finance Policy Section 7.4)"]
+
+    EXECUTE --> XERO_UPDATE["🤖 XERO UPDATE\n① Asset removed from register\n② Proceeds recorded\n③ Gain or loss journaled\nAudit trail in ApprovalMax"]
+
+    XERO_UPDATE --> END_OK(["🟢 END: Disposal Complete\nXero register updated\nAudit trail complete"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style REJ2 fill:#c1121f,color:#fff
+    style DONOR_NOTIF fill:#f4a261,color:#000
+    style COMMITTEE fill:#264653,color:#fff
+    style VALUE_GATE fill:#264653,color:#fff
+    style BOARD_ALL fill:#1a1a2e,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag13">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 11 — LEAVE APPLICATION</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Staff Member Requires Leave]) --> TYPE_GATE{"Leave Category"}
+
+    TYPE_GATE -->|"Routine Leaves"| ROUTINE_GATE{"Select Type"}
+    ROUTINE_GATE -->|"Annual Leave\n(28 days/year)"| ANNUAL
+    ROUTINE_GATE -->|"Urgent Leave\n(max 5 days)"| URGENT
+    ROUTINE_GATE -->|"Sick / Convalescence"| SICK
+    ROUTINE_GATE -->|"Compassionate Leave\n(5-10 days)"| COMPASSIONATE
+
+    TYPE_GATE -->|"Statutory Leaves"| STAT_GATE{"Select Type"}
+    STAT_GATE -->|"Maternity Leave\n(4 months)"| MATERNITY
+    STAT_GATE -->|"Paternity Leave\n(21 days)"| PATERNITY
+    STAT_GATE -->|"Adoption Leave"| ADOPTION
+
+    TYPE_GATE -->|"Special Leaves"| SPEC_GATE{"Select Type"}
+    SPEC_GATE -->|"Unpaid Leave\n(max 3 months)"| UNPAID
+    SPEC_GATE -->|"Study Leave\n(max 3 months)"| STUDY
+    SPEC_GATE -->|"Compulsory Leave\n(max 30 days)"| COMPULSORY
+
+    %% ANNUAL LEAVE
+    ANNUAL --> ADVANCE_CHK{"Submitted minimum\n7 working days in advance?"}
+    ADVANCE_CHK -->|"NO"| EARLY_WARN["⚠️ Warning: Policy requires\n7 working days advance notice\n(HR Policy Section 5.2)\nExceptional circumstances\nmay waive requirement"]
+    EARLY_WARN --> LINE_A
+    ADVANCE_CHK -->|"YES"| LINE_A
+    LINE_A["Line Manager: Reviews & recommends\nWith leave balance"]
+    LINE_A --> HR_A["HR Officer: Computes leave balance\nChecks entitlement (2.08 days/month)"]
+    HR_A --> AED_A["🔑 ACTING ED (Rebecca Mbaya)\nFinal approval"]
+    AED_A --> D_A{"AED Decision"}
+    D_A -->|"❌"| REJ_A["🔴 DECLINED"]
+    D_A -->|"✅"| END_A(["🟢 Annual Leave Approved"])
+
+    %% URGENT LEAVE
+    URGENT --> LINE_U["Line Manager: Reviews\nJustification attached for unusual circumstances"]
+    LINE_U --> AED_U["🔑 ACTING ED (Rebecca Mbaya)\nFinal approval"]
+    AED_U --> D_U{"AED Decision"}
+    D_U -->|"❌"| REJ_U["🔴 DECLINED"]
+    D_U -->|"✅"| END_U(["🟢 Urgent Leave Approved\nDeducted from annual leave balance"])
+
+    %% SICK LEAVE
+    SICK --> MEDCERT["Staff Member\nProvides medical certificate from\naccredited medical practitioner"]
+    MEDCERT --> HR_S["HR Officer\nProcesses based on medical certificate\nFull salary: 3 months\nHalf salary: further 3 months (per 12-month cycle)"]
+    HR_S --> RTW["Return-to-work interview\nby supervisor on return"]
+    RTW --> END_S(["🟢 Sick Leave Processed"])
+
+    %% COMPASSIONATE LEAVE
+    COMPASSIONATE --> LINE_C["Line Manager reviews\nDocumentary evidence required\n(separate from annual leave)"]
+    LINE_C --> OHR_C["Operations & HR Manager\nConfirms entitlement and evidence"]
+    OHR_C --> END_C(["🟢 Compassionate Leave Approved"])
+
+    %% MATERNITY / PATERNITY
+    MATERNITY --> DOCS_M["Staff submits:\nAppointment + antenatal documentation"]
+    DOCS_M --> OHR_M["Operations & HR Manager\nJachtolinah Ndinda Nzive\nReviews documentation"]
+    OHR_M --> AED_M["🔑 ACTING ED (Rebecca Mbaya)\nFinal approval\n4 months full pay\nFlextime (30hrs/week, 8 months post-delivery)\napproved separately"]
+    AED_M --> END_M(["🟢 Maternity Leave Approved"])
+
+    PATERNITY --> DOCS_P["Staff submits:\nRegistered spouse birth documentation"]
+    DOCS_P --> OHR_P["Operations & HR Manager\nReviews"]
+    OHR_P --> AED_P["🔑 ACTING ED\nFinal approval\n21 calendar days"]
+    AED_P --> END_P(["🟢 Paternity Leave Approved"])
+
+    %% UNPAID / STUDY / ADOPTION
+    UNPAID --> AED_UP["🔑 ACTING ED (Rebecca Mbaya)\nFinal approval\nWritten full details required\nMax 3 months\nConfidentiality maintained"]
+    AED_UP --> END_UP(["🟢 Unpaid Leave Approved"])
+
+    STUDY --> STUDY_CHK{"Minimum 3 years\ncontinuous service?"}
+    STUDY_CHK -->|"NO"| REJ_STY["🔴 INELIGIBLE\nDoes not meet service requirement"]
+    STUDY_CHK -->|"YES"| AED_STY["🔑 ACTING ED\nApproves (max 3 months, no pay)\nEvidence of registration required\nEmployee meets course cost"]
+    AED_STY --> END_STY(["🟢 Study Leave Approved"])
+
+    ADOPTION --> AED_AD["🔑 ACTING ED\nApproves\nLegal adoption documents required\nDays vary by child age (HR Policy Section 5.8)"]
+    AED_AD --> END_AD(["🟢 Adoption Leave Approved"])
+
+    %% COMPULSORY LEAVE
+    COMPULSORY --> INVEST_GATE{"Does investigation\ninvolve Acting ED?"}
+    INVEST_GATE -->|"NO"| AED_COMP["🔑 ACTING ED ORDERS\nCompulsory leave max 30 days\nFull salary maintained\nFormal investigation trigger documented"]
+    INVEST_GATE -->|"YES — AED is subject"| BC_COMP["🏛️ BOARD CHAIRPERSON\nBoniface Chitayi\nOrders compulsory leave"]
+    AED_COMP --> END_COMP(["🟢 Compulsory Leave Ordered\nFormal investigation proceeds"])
+    BC_COMP --> END_COMP
+
+    style START fill:#2d6a4f,color:#fff
+    style END_A fill:#2d6a4f,color:#fff
+    style END_U fill:#2d6a4f,color:#fff
+    style END_S fill:#2d6a4f,color:#fff
+    style END_C fill:#2d6a4f,color:#fff
+    style END_M fill:#2d6a4f,color:#fff
+    style END_P fill:#2d6a4f,color:#fff
+    style END_UP fill:#2d6a4f,color:#fff
+    style END_STY fill:#2d6a4f,color:#fff
+    style END_AD fill:#2d6a4f,color:#fff
+    style END_COMP fill:#2d6a4f,color:#fff
+    style REJ_A fill:#c1121f,color:#fff
+    style REJ_U fill:#c1121f,color:#fff
+    style REJ_STY fill:#c1121f,color:#fff
+    style EARLY_WARN fill:#f4a261,color:#000
+    style BC_COMP fill:#1a1a2e,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag14">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 12 — ACTING APPOINTMENT</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Acting Appointment Required]) --> LINE_MGR
+
+    LINE_MGR["📝 STEP 1 — LINE MANAGER\nSubmits acting appointment request specifying:\n① Position\n② Proposed person\n③ Reason for appointment\n④ Proposed acting period"]
+
+    LINE_MGR --> OHR_REV["🏢 STEP 2 — OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\nReviews:\n① Candidate qualifications\n② Acting appointment does not exceed 6 months\nApprovalMax flags AUTOMATICALLY at 5-month mark\nSLA: 24 hours"]
+
+    OHR_REV --> D1{"Ops & HR Mgr\nDecision"}
+    D1 -->|"❌ Ineligible candidate\nor other HR issue"| REJ1["🟡 RETURNED\nLine Manager identifies alternative"]
+    REJ1 --> LINE_MGR
+    D1 -->|"✅ HR clearance given"| DURATION_GATE
+
+    DURATION_GATE{"Acting Period Duration?"}
+
+    DURATION_GATE -->|"6 months or less"| AED_APPR["🔑 STEP 3 — ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nApproves acting appointment IN WRITING\nActing allowance: difference between current\nconsolidated salary and starting salary\nof the higher position\n(HR Policy Section 3.4)\nSLA: 48 hours"]
+
+    DURATION_GATE -->|"More than 6 months\n(or approaching 6 months)"| BOARD_DEC["🏛️ BOARD OF DIRECTORS\nBoard decides on extended acting appointment\nCannot exceed 6 months without Board decision\nSLA: Per Board meeting schedule"]
+
+    AED_APPR --> D2{"AED Decision"}
+    D2 -->|"❌ Declined"| REJ2["🔴 DECLINED\nActing appointment not effected"]
+    D2 -->|"✅ Approved in writing"| MONTH_CHK
+
+    BOARD_DEC --> D3{"Board Decision"}
+    D3 -->|"❌ Declined"| REJ3["🔴 DECLINED\nBoard resolution documented"]
+    D3 -->|"✅ Approved"| MONTH_CHK
+
+    MONTH_CHK{"Acting allowance due?\n(Appointment exceeds\n1 continuous month?)"}
+
+    MONTH_CHK -->|"NO — first month"| END_NO_ALLOW(["🟢 Acting Appointment Effected\nNo allowance yet\nApprovalMax monitors duration\n5-month auto-flag set"])
+
+    MONTH_CHK -->|"YES — month 2 onwards"| PAYROLL_UPDATE["💼 STEP 4 — ACTING FINANCE OFFICER + ACTING FINANCE MANAGER\nJanerose Nduta Motende / Paul Ochieng'\nUpdates payroll to reflect acting allowance\nActing allowance triggered from the month\nthe appointment exceeds 1 continuous month\nPayroll Approval Workflow (Section 5.5) triggered\nSLA: 24 hours after approval"]
+
+    PAYROLL_UPDATE --> FIVE_MONTH["⏰ ApprovalMax MONITORING\nAuto-flag at 5-month mark\nOps & HR Manager notified:\n'Acting appointment approaching 6-month limit'\nLine Manager must:\n① Extend via Board decision, or\n② End appointment, or\n③ Commence substantive appointment process"]
+
+    FIVE_MONTH --> END_OK(["🟢 Acting Appointment Active\nPayroll updated\nApprovalMax monitoring active\nImmutable audit trail maintained"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style END_NO_ALLOW fill:#2d6a4f,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style REJ2 fill:#c1121f,color:#fff
+    style REJ3 fill:#c1121f,color:#fff
+    style BOARD_DEC fill:#1a1a2e,color:#fff
+    style FIVE_MONTH fill:#f4a261,color:#000</div>
+  </div>
+</section>
+<section class="card" id="diag15">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 13 — STAFF EXIT</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Staff Member Initiates Exit\nor Exit Event Triggered]) --> EXIT_TYPE{"Exit Type?"}
+
+    EXIT_TYPE -->|"Resignation"| RESIGN
+    EXIT_TYPE -->|"Dismissal / Termination"| DISMISS
+    EXIT_TYPE -->|"End of Contract"| EOC
+
+    RESIGN["📝 STEP 1 — STAFF MEMBER\nSubmits written resignation to HR\nStates notice period per employment contract:\n• Acting ED and Senior Managers: 2 months\n• Junior staff: 1 month\n(HR Policy Section 16.2a)"]
+
+    DISMISS["📝 STEP 1 — HR OFFICER\nDismissal documented per HR Policy\nNotice period or payment in lieu confirmed"]
+
+    EOC["📝 STEP 1 — HR OFFICER\nEnd of contract confirmed\nFinal date recorded"]
+
+    RESIGN --> NOTIFY
+    DISMISS --> NOTIFY
+    EOC --> NOTIFY
+
+    NOTIFY["🏢 HR OFFICER — NOTIFIES:\n① Acting ED (Rebecca Mbaya)\n② Head of Department\n③ Finance Department\nDeadline: Day of receipt"]
+
+    NOTIFY --> HANDOVER["🏢 STEP 2 — OPERATIONS & HR MANAGER / HEAD OF DEPARTMENT\nJachtolinah Ndinda Nzive / Relevant Dept Head\nConducts handover process:\n① All organisation property catalogued\n② All property signed back per HR Policy Section 16.7a\nDeadline: Within notice period"]
+
+    HANDOVER --> EXIT_INT["🏢 EXIT INTERVIEW\nConducted by:\n• Operations & HR Manager (management staff)\n• Immediate Supervisor (all other staff)\nFor all NON-DISMISSAL exits\nResults documented in Staff Exit Interviews file\n(HR Policy Section 16.7c)\nDeadline: During notice period"]
+
+    EXIT_INT --> FINAL_DUES["💼 STEP 4 — ACTING FINANCE OFFICER + ACTING FINANCE MANAGER\nJanerose Nduta Motende / Paul Celvins Ochieng'\nComputes final dues:\n① Salary to last day worked\n② Pro-rated leave\n③ Pro-rated allowances\n④ Separation dues per TCE Section 14\nAll statutory deductions remitted per current legislation\nAll exit data = Employee & HR Data\n(Data Protection Policy Section 6.6)\nDeadline: By last working day"]
+
+    FINAL_DUES --> PROPERTY_CHK{"ALL BNBR property\nreturned and accounted for?"}
+
+    PROPERTY_CHK -->|"NO — property outstanding"| HOLD_CERT["🔴 CLEARANCE CERTIFICATE WITHHELD\nFinal dues WITHHELD\nuntil all property accounted for\n(HR Policy Section 16.7d)"]
+    HOLD_CERT --> PROPERTY_CHK
+
+    PROPERTY_CHK -->|"YES — all property returned"| CLEARANCE["🔑 STEP 5 — ACTING ED + FINANCE OFFICER\nRebecca Mbaya + Janerose Nduta Motende\n① Employee signs Clearance Certificate\n② Certificate of Service issued by Acting ED\n   or authorised designate\n   (HR Policy Section 16.6)\nDeadline: By last working day"]
+
+    CLEARANCE --> DATA_REVOKE["🤖 SYSTEM ACTION\nAll system access REVOKED:\n• ApprovalMax user deactivated\n• Xero access removed\n• All system permissions terminated\nAccesss revocation logged in ApprovalMax\nConfirm with IT Administrator"]
+
+    DATA_REVOKE --> RECORDS["📋 RECORDS RETENTION\nAll exit documentation retained:\n• 10 years (Finance Policy Section 7.4)\nConfidentiality maintained per\nData Protection Policy"]
+
+    RECORDS --> END_OK(["🟢 END: Staff Exit Complete\nClearance certificate issued\nFinal dues paid\nSystem access revoked\nAudit trail complete"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style HOLD_CERT fill:#c1121f,color:#fff
+    style DATA_REVOKE fill:#264653,color:#fff
+    style NOTIFY fill:#533483,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag16">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>WORKFLOW 14 — DATA ACCESS & SYSTEM PERMISSION APPROVAL</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Data Access Required]) --> REQUEST
+
+    REQUEST["📝 STEP 1 — STAFF MEMBER or IT ADMINISTRATOR\nSubmit Data Access Request in ApprovalMax specifying:\n① System: Xero / ApprovalMax / MERL database / Payroll\n② Data category\n③ Business justification\n④ Duration of access required\nSystem auto-tags with data classification\n(Data Protection Policy Section 6)"]
+
+    REQUEST --> MFA_CHK{"MFA enabled\nfor requesting user?"}
+    MFA_CHK -->|"NO — MFA not active"| MFA_BLOCK["🔴 BLOCKED\nMFA must be activated BEFORE\naccess can be granted\n(Data Protection Policy Section 9.3c)\nNo exceptions"]
+    MFA_BLOCK --> MFA_CHK
+    MFA_CHK -->|"YES — MFA active"| DATA_CLASS
+
+    DATA_CLASS{"Data Classification?\nWhat data is being\naccessed?"}
+
+    DATA_CLASS -->|"Standard operational data\n(not Special Category)"| LINE_REV
+
+    DATA_CLASS -->|"SPECIAL CATEGORY DATA:\n• Payroll data\n• Board-level documents\n• Beneficiary health records\n• Beneficiary mental health records\n• Any personal data beyond standard role"| SPECIAL_ROUTE["⚠️ SPECIAL CATEGORY DATA\nFlagged for MANDATORY\nActing ED sign-off"]
+
+    LINE_REV["📋 STEP 2 — LINE MANAGER / DEPARTMENT HEAD\n① Reviews and confirms business need\n② Confirms proportionality\n③ Aligns with need-to-know principle\n④ Aligns with least-privilege principle\n   (Data Protection Policy Section 9.3a)\nJustification note added — part of Kenya DPA 2019 compliance record\nSLA: 24 hours"]
+
+    LINE_REV --> D1{"Line Manager\nDecision"}
+    D1 -->|"❌ Business need\nnot confirmed"| REJ1["🔴 DECLINED\nRequest closed\nReason documented"]
+    D1 -->|"✅ Business need confirmed"| SCOPE_REV
+
+    SCOPE_REV["🏢 STEP 3 — OPERATIONS & HR MANAGER\nJachtolinah Ndinda Nzive\nor\nMERL LEAD (for MERL and beneficiary data)\nJefferson Ponde Ochilo\n① Reviews access scope vs role responsibilities\n② Confirms data minimization principle upheld\n③ Flags any Special Category data\n   for mandatory Acting ED sign-off\nSLA: 24 hours"]
+
+    SCOPE_REV --> D2{"Scope Review\nDecision"}
+    D2 -->|"❌ Access scope too broad"| REJ2["🟡 RETURNED\nAccess scope revised\nResubmitted"]
+    REJ2 --> REQUEST
+    D2 -->|"✅ Scope appropriate — standard data"| STANDARD_GRANT
+    D2 -->|"⚠️ Special Category data flagged"| SPECIAL_ROUTE
+
+    SPECIAL_ROUTE --> AED_REV["🔑 STEP 4 — ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nMANDATORY APPROVAL for:\n• Payroll data\n• Board-level documents\n• Beneficiary health and mental health data\n• Any access giving sight of personal data\n  beyond standard role\nAll approvals logged — part of RBAC compliance record\n(Data Protection Policy Section 9.3)\nSLA: 48 hours"]
+
+    AED_REV --> D3{"AED Decision"}
+    D3 -->|"❌ Declined"| REJ3["🔴 DECLINED\nReason documented\nCompliance record updated"]
+    D3 -->|"✅ Approved"| STANDARD_GRANT
+
+    STANDARD_GRANT["🔑 STEP 5 — IT ADMINISTRATOR\nActivates access in system\nMFA verified as ACTIVE before access granted\nAccess expiry date SET in ApprovalMax\n90-day review reminder auto-generated\nAccess grant logged in RBAC compliance record"]
+
+    STANDARD_GRANT --> ACCESS_LIVE(["🟢 ACCESS ACTIVE\nAudit trail in ApprovalMax"])
+
+    ACCESS_LIVE --> REVIEW_90["⏰ 90-DAY ACCESS REVIEW\n(Auto-generated by ApprovalMax)\nOperations & HR Manager reviews:\n① Is access still required?\n② Is access still proportionate?\nExpired or unnecessary access REVOKED immediately\n(Data Protection Policy Section 9.3b)"]
+
+    REVIEW_90 --> STILL_NEEDED{"Access still\nrequired and\nproportionate?"}
+    STILL_NEEDED -->|"YES"| REVIEW_90
+    STILL_NEEDED -->|"NO"| REVOKE["🔴 ACCESS REVOKED\nRevocation logged in ApprovalMax\nImmutably"]
+
+    REVOKE --> END_REVOKE(["🟢 END: Access Revoked\nAudit trail complete"])
+
+    ACCESS_LIVE --> BREACH_MON["🔍 BREACH MONITORING\nAny unauthorized data access\n= potential data breach\nActing Finance Officer (Janerose Nduta Motende)\nis designated FIRST POINT OF CONTACT\nfor ApprovalMax and Xero breach reporting"]
+
+    BREACH_MON --> BREACH_DET{"Unauthorized\naccess detected?"}
+    BREACH_DET -->|"NO"| ACCESS_LIVE
+    BREACH_DET -->|"YES"| BREACH_RESP["🚨 BREACH RESPONSE\nBreath notification workflow triggered\nReport to ODPC within 72 HOURS\n(Data Protection Policy Section 11.2a)\nActing Finance Officer notifies ODPC\nActing ED and Operations & HR Manager\nalerted immediately"]
+    BREACH_RESP --> END_BREACH(["🔴 END: Breach Reported\nODPC notified within 72 hours\nAudit trail preserved"])
+
+    style START fill:#2d6a4f,color:#fff
+    style ACCESS_LIVE fill:#2d6a4f,color:#fff
+    style END_REVOKE fill:#2d6a4f,color:#fff
+    style MFA_BLOCK fill:#c1121f,color:#fff
+    style REJ1 fill:#c1121f,color:#fff
+    style REJ2 fill:#e07a5f,color:#fff
+    style REJ3 fill:#c1121f,color:#fff
+    style REVOKE fill:#c1121f,color:#fff
+    style BREACH_RESP fill:#c1121f,color:#fff
+    style END_BREACH fill:#c1121f,color:#fff
+    style SPECIAL_ROUTE fill:#533483,color:#fff
+    style DATA_CLASS fill:#264653,color:#fff
+    style REVIEW_90 fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag17">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>DELEGATION AUTHORITY ARCHITECTURE</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 START: Approver will be ABSENT\nor UNAVAILABLE]) --> PRE_REQ
+
+    PRE_REQ["⚠️ PRE-CONDITION: Delegation must be set up\nin ApprovalMax BEFORE the absence begins\n(Section 6.2 — proactive setup required)"]
+
+    PRE_REQ --> SEG_RULE["🔒 SEGREGATION OF DUTIES RULE\nDelegate CANNOT approve transactions\nthat THEY THEMSELVES initiated\n(regardless of delegation authority)"]
+
+    SEG_RULE --> AUTH_REQ["📝 DELEGATION REQUIRES APPROVAL FROM:\n• For Operations & HR Manager or above delegating:\n  → Approved by Acting ED (Rebecca Mbaya)\n• Where delegation would rest with Acting ED:\n  → Approved by Board Chairperson (Boniface Chitayi)"]
+
+    AUTH_REQ --> WHO{"Who is the\nPrimary Approver\nbeing delegated?"}
+
+    %% OHR MANAGER DELEGATION
+    WHO -->|"Operations & HR Manager\nJachtolinah Ndinda Nzive"| OHR_DEL
+
+    OHR_DEL["DELEGATION: Operations & HR Manager\n→ Delegate: Acting Finance Manager\n   (Paul Celvins Ochieng')\n→ Delegation Limit: Up to KES 99,999 ONLY\n→ Items above KES 99,999: HELD until\n   Operations & HR Manager returns\n→ Requires: Acting ED approval\n→ Expiry: Set in ApprovalMax (auto-expires\n   on return date)"]
+
+    OHR_DEL --> OHR_GATE{"Approval from\nActing ED?"}
+    OHR_GATE -->|"❌ Not approved"| REJ_OHR["🔴 Delegation NOT activated\nOperations & HR Manager must\narrange alternative coverage"]
+    OHR_GATE -->|"✅ Approved"| OHR_ACTIVE["✅ Delegation Active\nLogged in ApprovalMax\nImmutable audit trail\nAuto-expires on return date"]
+    OHR_ACTIVE --> OVER_99K_OHR["⚠️ Items ABOVE KES 99,999:\nHELD in ApprovalMax queue\nNot processed until\nOperations & HR Manager returns"]
+
+    %% FINANCE MANAGER DELEGATION
+    WHO -->|"Acting Finance Manager\nPaul Celvins Ochieng'"| FM_DEL
+
+    FM_DEL["DELEGATION: Acting Finance Manager\n→ Delegate: Operations & HR Manager\n   (Jachtolinah Ndinda Nzive)\n→ Delegation Limit: FULL Finance Manager\n   approval authority for duration\n→ Board Treasurer notified for any item\n   requiring Acting ED or Board approval\n→ Requires: Acting ED approval\n→ Expiry: Set in ApprovalMax (auto-expires\n   on return date)"]
+
+    FM_DEL --> FM_GATE{"Approval from\nActing ED?"}
+    FM_GATE -->|"❌ Not approved"| REJ_FM["🔴 Delegation NOT activated"]
+    FM_GATE -->|"✅ Approved"| FM_ACTIVE["✅ Delegation Active\nFull Finance Manager authority transferred\nBoard Treasurer notified for escalations"]
+
+    %% ACTING ED DELEGATION
+    WHO -->|"Acting ED\nRebecca Mbaya"| AED_DEL
+
+    AED_DEL["DELEGATION: Acting Executive Director\n→ Delegate: Per ED's delegation instruction\n→ Delegation Limit: Tier 1 ONLY (up to KES 99,999)\n→ Items requiring AED approval (KES 100,000+):\n   HELD until AED returns, or\n   per ED's delegation mandate\n→ Extended absence: Board Treasurer\n   (CPA Charles Muhia) acts as last-resort\n   signatory per Board mandate / Board Resolution\n→ Requires: Board Chairperson (Boniface Chitayi)\n   approval\n→ Expiry: Set in ApprovalMax"]
+
+    AED_DEL --> AED_GATE{"Approval from\nBoard Chairperson?"}
+    AED_GATE -->|"❌ Not approved"| REJ_AED["🔴 Delegation NOT activated\nItems held until AED returns"]
+    AED_GATE -->|"✅ Approved"| AED_ACTIVE["✅ Delegation Active\nTier 1 only delegated\nKES 100,000+ items HELD\nBoard Treasurer on standby\nfor extended absence"]
+    AED_ACTIVE --> OVER_100K_AED["⚠️ Items above KES 99,999:\nHELD or routed to\nBoard Treasurer per\nBoard mandate"]
+
+    %% BOARD TREASURER DELEGATION
+    WHO -->|"Board Treasurer\nCPA Charles Muhia"| BT_DEL
+
+    BT_DEL["DELEGATION: Board Treasurer\n→ Delegate: Board Chairperson (Boniface Chitayi)\n→ Condition: Board Chairperson acts if\n   Treasurer is unavailable for\n   Tier 3 and Tier 4 approvals\n→ Requires: Full Board notification\n→ Expiry: Set in ApprovalMax"]
+
+    BT_DEL --> BT_GATE{"Full Board\nNotified?"}
+    BT_GATE -->|"NO"| REJ_BT["🔴 Delegation NOT valid\nBoard must be notified"]
+    BT_GATE -->|"YES"| BT_ACTIVE["✅ Delegation Active\nBoard Chairperson covers\nTier 3 and Tier 4 approvals\nFull Board notification on record"]
+
+    %% COMMON END
+    OHR_ACTIVE --> LOG["📋 DELEGATION LOG\nImmutable audit trail in ApprovalMax\nIncludes:\n① Primary approver name\n② Delegate name\n③ Delegation limit\n④ Approval authority (who approved delegation)\n⑤ Start date\n⑥ Expiry date\n⑦ All transactions approved under delegation"]
+    FM_ACTIVE --> LOG
+    AED_ACTIVE --> LOG
+    BT_ACTIVE --> LOG
+
+    LOG --> END_OK(["🟢 Delegation Active and Logged"])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style REJ_OHR fill:#c1121f,color:#fff
+    style REJ_FM fill:#c1121f,color:#fff
+    style REJ_AED fill:#c1121f,color:#fff
+    style REJ_BT fill:#c1121f,color:#fff
+    style SEG_RULE fill:#533483,color:#fff
+    style OVER_99K_OHR fill:#f4a261,color:#000
+    style OVER_100K_AED fill:#f4a261,color:#000
+    style BT_DEL fill:#1a1a2e,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag18">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>ESCALATION WORKFLOW (Diagram 1)</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">flowchart TD
+    START([🟢 Approval Request Submitted in ApprovalMax]) --> PENDING
+
+    PENDING["⏳ APPROVAL PENDING\nApprover has been notified\nTimer starts from submission"]
+
+    PENDING --> T24{"⏰ 24 HOURS ELAPSED?\nApproval still pending?"}
+
+    T24 -->|"NO — Approved or Rejected\nwithin 24 hours"| RESOLVED(["✅ RESOLVED\nNo escalation required"])
+
+    T24 -->|"YES — still pending at 24 hours"| ESC1
+
+    ESC1["📧 ESCALATION LEVEL 1 — 24 HOURS\nSystem sends REMINDER notification to:\n• Pending approver — email\n• Pending approver — ApprovalMax mobile app\nAction required from: APPROVER THEMSELVES"]
+
+    ESC1 --> T48{"⏰ 48 HOURS ELAPSED?\nApproval still pending?"}
+
+    T48 -->|"NO — Resolved between 24–48 hours"| RESOLVED
+
+    T48 -->|"YES — still pending at 48 hours"| ESC2
+
+    ESC2["📧 ESCALATION LEVEL 2 — 48 HOURS\nSystem sends ESCALATION notification to:\n• Approver's LINE MANAGER\nLine Manager must:\n① Contact the approver directly\n② Determine if delegation is needed\n③ Ensure action is taken urgently"]
+
+    ESC2 --> T72{"⏰ 72 HOURS ELAPSED?\nApproval still pending?"}
+
+    T72 -->|"NO — Resolved between 48–72 hours"| RESOLVED
+
+    T72 -->|"YES — still pending at 72 hours"| ESC3
+
+    ESC3["🔑 ESCALATION LEVEL 3 — 72 HOURS\nSystem ESCALATES TO ACTING ED:\nRebecca Mbaya\nSystem sends SUMMARY of ALL pending approvals\nActing ED must:\n① Review all pending items\n② Take direct action or override\n③ Arrange emergency delegation if required"]
+
+    ESC3 --> T96{"⏰ 96 HOURS ELAPSED?\nApproval still pending?"}
+
+    T96 -->|"NO — Resolved between 72–96 hours"| RESOLVED
+
+    T96 -->|"YES — still pending at 96 hours"| ESC4
+
+    ESC4["🚨 ESCALATION LEVEL 4 — 96 HOURS\nCRITICAL DELAY\nSystem flags transaction as:\n'CRITICAL DELAY' in Finance Dashboard\n\nSYSTEM LOCKS further transactions by\nINITIATING DEPARTMENT until matter resolved\n\nActing ED and Finance Manager\nnotified with CRITICAL DELAY status\nBoard Treasurer notified if approval\ninvolves Tier 3 or Tier 4 items"]
+
+    ESC4 --> LOCK_ACTION{"Department\ntransactions\nLOCKED"}
+
+    LOCK_ACTION --> RESOLUTION["🔑 RESOLUTION REQUIRED\nActing ED (Rebecca Mbaya) must:\n① Approve the pending item, OR\n② Formally reject the pending item, OR\n③ Formally delegate to authorised delegate\n④ Document reason for delay\nAll actions logged immutably in ApprovalMax"]
+
+    RESOLUTION --> UNLOCK["🤖 SYSTEM UNLOCK\nUpon Acting ED action:\nDepartment transactions UNLOCKED\nCritical Delay flag removed\nFull audit trail of delay and resolution"]
+
+    UNLOCK --> END_OK(["🟢 RESOLVED\nDelay documented\nAudit trail complete"])
+
+    style START fill:#2d6a4f,color:#fff
+    style RESOLVED fill:#2d6a4f,color:#fff
+    style END_OK fill:#2d6a4f,color:#fff
+    style ESC1 fill:#f4a261,color:#000
+    style ESC2 fill:#e07a5f,color:#fff
+    style ESC3 fill:#c1121f,color:#fff
+    style ESC4 fill:#6a0572,color:#fff
+    style LOCK_ACTION fill:#6a0572,color:#fff
+    style RESOLUTION fill:#1a1a2e,color:#fff
+    style PENDING fill:#264653,color:#fff</div>
+  </div>
+</section>
+<section class="card" id="diag19">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>ESCALATION WORKFLOW (Diagram 2)</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <div class="mermaid">gantt
+    title ApprovalMax Escalation Timeline
+    dateFormat HH
+    axisFormat %H hrs
+
+    section Normal
+    Approval window          :active, a1, 00, 24h
+
+    section Escalation Level 1
+    Reminder to approver     :crit, e1, 24, 1h
+
+    section Escalation Level 2
+    Manager escalation       :crit, e2, 48, 1h
+
+    section Escalation Level 3
+    Acting ED escalation     :crit, e3, 72, 1h
+
+    section Escalation Level 4
+    CRITICAL DELAY + Lock    :crit, e4, 96, 1h</div>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'stepBefore' },
+    fontSize: 13,
+    fontFamily: 'Inter, sans-serif'
+  });
+
+  // Active nav on scroll
+  const sections = document.querySelectorAll('section.card');
+  const navLinks = document.querySelectorAll('nav a');
+
+  window.setActive = function(el) {
+    navLinks.forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { root: document.getElementById('mainContent'), rootMargin: '-20px 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Search filter
+  window.filterNav = function(val) {
+    const q = val.toLowerCase();
+    document.querySelectorAll('#navList li').forEach(li => {
+      li.style.display = li.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  };
+
+  // Toggle fit
+  window.toggleZoom = function(btn) {
+    const wrap = btn.closest('.card').querySelector('.diagram-wrap');
+    wrap.classList.toggle('fit');
+    btn.textContent = wrap.classList.contains('fit') ? '⛶ Scroll' : '⛶ Fit';
+  };
+
+  // Apply fit by default after render
+  mermaid.initialize({ startOnLoad: false, flowchart: { curve: 'stepBefore' } });
+  document.addEventListener('DOMContentLoaded', () => {
+    mermaid.run().then(() => {
+      document.querySelectorAll('.diagram-wrap').forEach(w => w.classList.add('fit'));
+      document.querySelectorAll('.zoom-btn').forEach(b => b.textContent = '⛶ Scroll');
+    });
+  });
+</script>
+</body>
+</html>

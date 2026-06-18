@@ -14,7 +14,6 @@ flowchart TD
     PM["📁 PROGRAMS MANAGER\nGeoffrey Omega Khira\n(Budget Holder — Programs)"]
     ML["🔍 MERL LEAD\nJefferson Ponde Ochilo\n(Budget Holder — MERL & Beneficiary Data)"]
     DS["👥 DEPARTMENTAL STAFF\n(Requestors / Initiators)"]
-    VOL["🤝 VOLUNTEERS\n(Limited Access — MERL Dept)"]
 
     BC -->|"Co-approves Tier 4 (KES 1M+)\nBoard-level hirings\nExtended acting (6+ months)"| BT
     BT -->|"Co-approves Tier 3 (KES 500K–999K)\nFinal signatory if AED unavailable"| AED
@@ -25,7 +24,6 @@ flowchart TD
     PM -->|"Budget holder approvals\nDonor report sign-off\nProcurement committee (KES 100K+)"| DS
     ML -->|"MERL/beneficiary data approvals\nProcurement committee (KES 100K+)"| DS
     AFO -->|"Prepares all financial documents"| DS
-    DS --> VOL
 
     style BC fill:#1a1a2e,color:#fff,stroke:#e94560
     style BT fill:#16213e,color:#fff,stroke:#e94560
@@ -36,7 +34,6 @@ flowchart TD
     style PM fill:#2d6a4f,color:#fff,stroke:#a8a8a8
     style ML fill:#2d6a4f,color:#fff,stroke:#a8a8a8
     style DS fill:#4a4e69,color:#fff,stroke:#a8a8a8
-    style VOL fill:#4a4e69,color:#ccc,stroke:#a8a8a8
 ```
 
 ---

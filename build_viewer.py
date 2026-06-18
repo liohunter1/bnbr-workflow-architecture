@@ -50,14 +50,14 @@ html_out = f'''<!DOCTYPE html>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
   :root {{
-    --bg: #f8fafc;
+    --bg: #F5F2F9;
     --surface: #ffffff;
-    --surface2: #f1f5f9;
-    --border: #e2e8f0;
-    --accent: #2563eb;
-    --accent2: #ea580c;
-    --text: #0f172a;
-    --text-muted: #475569;
+    --surface2: #F5F2F9;
+    --border: #E2E0E6;
+    --accent: #4E2E7B;
+    --accent2: #FDB813;
+    --text: #2D2D2D;
+    --text-muted: #5a5a5a;
     --success: #10b981;
     --danger: #ef4444;
     --sidebar-w: 260px;
@@ -187,7 +187,7 @@ html_out = f'''<!DOCTYPE html>
   }}
   nav ul li a.active {{
     color: var(--accent);
-    background: rgba(79,142,247,.08);
+    background: rgba(78,46,123,.08);
     border-left-color: var(--accent);
     font-weight: 500;
   }}
@@ -208,7 +208,7 @@ html_out = f'''<!DOCTYPE html>
   }}
 
   .welcome {{
-    background: linear-gradient(135deg, rgba(79,142,247,.12), rgba(240,192,64,.08));
+    background: linear-gradient(135deg, rgba(78,46,123,.08), rgba(253,184,19,.15));
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 20px 24px;

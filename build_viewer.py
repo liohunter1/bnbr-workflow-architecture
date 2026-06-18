@@ -1,52 +1,51 @@
-import os, glob
+import os, glob, html
 
 folder = r'C:\Users\le\OneDrive\Desktop\hanns docs\BNBR_Workflow_Architecture'
 files = sorted(glob.glob(os.path.join(folder, '*.md')))
 
-diagrams = []
+documents = []
 for f in files:
     name = os.path.basename(f)
     with open(f, encoding='utf-8') as fh:
         content = fh.read()
-    parts = content.split('```mermaid')
-    for idx, part in enumerate(parts[1:], 1):
-        end = part.find('```')
-        if end != -1:
-            code = part[:end].strip()
-            title = name.replace('.md','').replace('_',' ').strip()
-            # Get first H1 or H2 from file as friendly title
-            for line in content.split('\n'):
-                if line.startswith('# '):
-                    title = line.replace('# ','').strip()
-                    break
-            label = f"{title} (Diagram {idx})" if len(parts) > 2 else title
-            diagrams.append((label, code))
+    
+    title = name.replace('.md','').replace('_',' ').strip()
+    # Get first H1 or H2 from file as friendly title
+    for line in content.split('\n'):
+        if line.startswith('# '):
+            title = line.replace('# ','').strip()
+            break
+            
+    documents.append((title, content))
 
 nav_items = ''
-for i, (title, _) in enumerate(diagrams):
+for i, (title, _) in enumerate(documents):
     short = title[:42] + '…' if len(title) > 42 else title
-    nav_items += f'<li><a href="#diag{i}" onclick="setActive(this)">{short}</a></li>\n'
+    nav_items += f'<li><a href="#doc{i}" onclick="setActive(this)">{short}</a></li>\n'
 
 cards = ''
-for i, (title, code) in enumerate(diagrams):
-    cards += f'''<section class="card" id="diag{i}">
+for i, (title, content) in enumerate(documents):
+    escaped = html.escape(content)
+    cards += f'''<section class="card" id="doc{i}">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>{title}</h2>
     <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
   </div>
   <div class="diagram-wrap">
-    <div class="mermaid">{code}</div>
+    <textarea class="raw-md" style="display:none;">{escaped}</textarea>
+    <div class="md-out"></div>
   </div>
 </section>\n'''
 
-html = f'''<!DOCTYPE html>
+html_out = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BNBR ApprovalMax Workflow Architecture</title>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -231,11 +230,6 @@ html = f'''<!DOCTYPE html>
     overflow: hidden;
     scroll-margin-top: 20px;
   }}
-  .card:hover {{
-    border-color: rgba(79,142,247,.4);
-    box-shadow: 0 4px 24px rgba(79,142,247,.08);
-    transition: all .2s;
-  }}
   .card-header {{
     display: flex;
     align-items: center;
@@ -269,7 +263,7 @@ html = f'''<!DOCTYPE html>
   .zoom-btn:hover {{ color: var(--accent); border-color: var(--accent); }}
 
   .diagram-wrap {{
-    padding: 16px;
+    padding: 20px;
     background: var(--bg);
     overflow-x: auto;
   }}
@@ -285,10 +279,22 @@ html = f'''<!DOCTYPE html>
     min-height: 80px;
     display: flex;
     justify-content: center;
+    margin: 20px 0;
   }}
   .mermaid svg {{
     max-height: 680px;
   }}
+
+  /* ── MARKDOWN STYLES ── */
+  .md-out table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85em; }}
+  .md-out th, .md-out td {{ border: 1px solid var(--border); padding: 10px; text-align: left; }}
+  .md-out th {{ background: var(--surface2); color: var(--accent2); }}
+  .md-out h1, .md-out h2, .md-out h3 {{ margin-top: 30px; margin-bottom: 10px; color: var(--accent); font-weight: 600; font-size: 1.2em; }}
+  .md-out hr {{ border: none; border-top: 1px solid var(--border); margin: 20px 0; }}
+  .md-out p, .md-out li {{ line-height: 1.6; font-size: 0.85em; margin-bottom: 10px; }}
+  .md-out ul, .md-out ol {{ margin-left: 20px; }}
+  .md-out blockquote {{ border-left: 3px solid var(--accent); padding-left: 10px; color: var(--text-muted); }}
+  .md-out code:not([class*="language-"]) {{ background: var(--surface2); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }}
 
   /* ── SCROLLBAR ── */
   ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
@@ -324,7 +330,7 @@ html = f'''<!DOCTYPE html>
     <p>Document Ref: BNBR/FIN/AMWP/001/2026 &nbsp;|&nbsp; Effective: 1 April 2026 &nbsp;|&nbsp; Integrated with Xero</p>
   </div>
   <div class="header-meta">
-    <div class="badge">Diagrams: <span>{len(diagrams)}</span></div>
+    <div class="badge">Documents: <span>{len(documents)}</span></div>
     <div class="badge">Version <span>1.0</span></div>
   </div>
 </header>
@@ -332,9 +338,9 @@ html = f'''<!DOCTYPE html>
 <div class="layout">
   <aside>
     <div class="sidebar-search">
-      <input type="text" id="searchInput" placeholder="&#x1F50D; Search diagrams..." oninput="filterNav(this.value)">
+      <input type="text" id="searchInput" placeholder="&#x1F50D; Search documents..." oninput="filterNav(this.value)">
     </div>
-    <div class="sidebar-label">Workflow Diagrams</div>
+    <div class="sidebar-label">Architecture Documents</div>
     <nav>
       <ul id="navList">
         {nav_items}
@@ -348,7 +354,7 @@ html = f'''<!DOCTYPE html>
       <div class="welcome-icon">&#x1F4CA;</div>
       <div class="welcome-text">
         <h2>BNBR ApprovalMax Workflow Architecture Package</h2>
-        <p>All {len(diagrams)} workflow diagrams sourced exclusively from the BNBR Workflow Plan Extract (7 May 2026) and Staff List (22 May 2026). Use the sidebar to navigate. Click <strong>&#x26F6; Fit</strong> on any diagram to toggle between fit-to-screen and full-scroll view.</p>
+        <p>All {len(documents)} architecture documents sourced exclusively from the BNBR Workflow Plan Extract (7 May 2026) and Staff List (22 May 2026). Use the sidebar to navigate. Click <strong>&#x26F6; Fit</strong> on any diagram to toggle between fit-to-screen and full-scroll view.</p>
       </div>
     </div>
 
@@ -357,12 +363,20 @@ html = f'''<!DOCTYPE html>
 </div>
 
 <script>
-  mermaid.initialize({{
-    startOnLoad: true,
-    theme: 'default',
-    flowchart: {{ useMaxWidth: true, htmlLabels: true, curve: 'stepBefore' }},
-    fontSize: 13,
-    fontFamily: 'Inter, sans-serif'
+  // Parse markdown and convert mermaid blocks
+  document.querySelectorAll('.card').forEach(card => {{
+    const raw = card.querySelector('.raw-md').value;
+    const out = card.querySelector('.md-out');
+    out.innerHTML = marked.parse(raw);
+    
+    // Replace markdown code blocks containing mermaid with div.mermaid
+    out.querySelectorAll('code.language-mermaid').forEach(code => {{
+      const pre = code.parentElement;
+      const div = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = code.textContent;
+      pre.replaceWith(div);
+    }});
   }});
 
   // Active nav on scroll
@@ -409,13 +423,12 @@ html = f'''<!DOCTYPE html>
     btn.textContent = wrap.classList.contains('fit') ? '⛶ Scroll' : '⛶ Fit';
   }};
 
-  // Apply fit by default after render
-  mermaid.initialize({{ startOnLoad: false, flowchart: {{ curve: 'stepBefore' }} }});
-  document.addEventListener('DOMContentLoaded', () => {{
-    mermaid.run().then(() => {{
-      document.querySelectorAll('.diagram-wrap').forEach(w => w.classList.add('fit'));
-      document.querySelectorAll('.zoom-btn').forEach(b => b.textContent = '⛶ Scroll');
-    }});
+  // Initialize mermaid AFTER the DOM nodes have been injected by marked.js
+  mermaid.initialize({{ startOnLoad: false, flowchart: {{ useMaxWidth: true, htmlLabels: true, curve: 'stepBefore' }}, theme: 'default', fontSize: 13, fontFamily: 'Inter, sans-serif' }});
+  
+  mermaid.run().then(() => {{
+    document.querySelectorAll('.diagram-wrap').forEach(w => w.classList.add('fit'));
+    document.querySelectorAll('.zoom-btn').forEach(b => b.textContent = '⛶ Scroll');
   }});
 </script>
 </body>
@@ -423,6 +436,6 @@ html = f'''<!DOCTYPE html>
 
 out = os.path.join(folder, 'index.html')
 with open(out, 'w', encoding='utf-8') as fh:
-    fh.write(html)
+    fh.write(html_out)
 print(f'Done: {out}')
-print(f'Diagrams: {len(diagrams)}')
+print(f'Documents processed: {len(documents)}')

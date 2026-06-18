@@ -102,6 +102,14 @@ html = f'''<!DOCTYPE html>
   .header-meta {{
     display: flex; gap: 10px; align-items: center;
   }}
+  .menu-toggle {{
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 24px;
+    cursor: pointer;
+  }}
   .badge {{
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -287,11 +295,29 @@ html = f'''<!DOCTYPE html>
   ::-webkit-scrollbar-track {{ background: var(--bg); }}
   ::-webkit-scrollbar-thumb {{ background: var(--border); border-radius: 3px; }}
   ::-webkit-scrollbar-thumb:hover {{ background: #3a3f5a; }}
+
+  @media (max-width: 768px) {{
+    header {{ padding: 0 10px; gap: 8px; flex-wrap: wrap; }}
+    .header-title h1 {{ font-size: 0.85em; }}
+    .header-meta {{ display: none; }}
+    .menu-toggle {{ display: block; }}
+    aside {{
+      position: absolute;
+      left: -var(--sidebar-w);
+      top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      z-index: 1000;
+      transition: left 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+    }}
+    aside.open {{ left: 0; }}
+  }}
 </style>
 </head>
 <body>
 
 <header>
+  <button class="menu-toggle" onclick="toggleSidebar()">&#9776;</button>
   <div class="logo">B</div>
   <div class="header-title">
     <h1>BNBR Kenya &mdash; ApprovalMax Workflow Architecture</h1>
@@ -346,6 +372,13 @@ html = f'''<!DOCTYPE html>
   window.setActive = function(el) {{
     navLinks.forEach(a => a.classList.remove('active'));
     el.classList.add('active');
+    if (window.innerWidth <= 768) {{
+      document.querySelector('aside').classList.remove('open');
+    }}
+  }};
+
+  window.toggleSidebar = function() {{
+    document.querySelector('aside').classList.toggle('open');
   }};
 
   const observer = new IntersectionObserver((entries) => {{
@@ -388,7 +421,7 @@ html = f'''<!DOCTYPE html>
 </body>
 </html>'''
 
-out = os.path.join(folder, 'BNBR_All_Diagrams.html')
+out = os.path.join(folder, 'index.html')
 with open(out, 'w', encoding='utf-8') as fh:
     fh.write(html)
 print(f'Done: {out}')

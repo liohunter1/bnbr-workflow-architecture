@@ -47,46 +47,11 @@
 
 ---
 
-## SECTION C — MERL DEPARTMENT VOLUNTEERS (from XLSX — May 2026 Sheet)
+## SECTION C — VOLUNTEERS (from XLSX — May 2026 Sheet)
 
 | # | Name | Role | Email |
 |---|------|------|-------|
-| 21 | Beatrice Meli Kilonzo | Volunteer — MERL | melibeatrice01@gmail.com |
-| 22 | Gladys Malika Abae | Volunteer — MERL | mabae72@gmail.com |
-| 23 | Caroline Gacheri | Volunteer — MERL | gachericaroline494@gmail.com |
-| 24 | Blessed Vera Nekesa Odumo | Volunteer — MERL | odumobless@gmail.com |
-| 25 | Japheth Kenga | Volunteer — MERL | japhethkenga70@gmail.com |
-| 26 | Rayler Moraa Mongare | Volunteer — MERL | raylermongare@gmail.com |
-| 27 | Catherine Mwangi | Volunteer — MERL | cateswaithera@gmail.com |
-| 28 | Nathaniel Auch Osunga | Volunteer — MERL | osungaauch001@gmail.com |
-| 29 | Alex Mugendi | Volunteer — MERL | alexmugendi.i@gmail.com |
-| 30 | Doris Gakii Mikume | Volunteer — MERL | kikimikume@gmail.com |
-| 31 | Lena Kinya Murega | Volunteer — MERL | kinyalenah77@gmail.com |
-| 32 | Esther Nyambura Kimani | Volunteer — MERL | estherkimani334@gmail.com |
-| 33 | Kibwana Mohamed Nyoka | Volunteer — MERL | mzazikm@gmail.com |
-| 34 | Justine Odhiambo Oduk | Volunteer — MERL | krissjustine@gmail.com |
-| 35 | Florence Injiri | Volunteer — MERL | gloriainjiri@gmail.com |
-| 36 | Boniface Machache | Volunteer — MERL | bonifacemwahui@gmail.com |
-| 37 | Mourine Lukandu | Volunteer — MERL | lukandum@gmail.com |
-| 38 | Fred Siteti Egesa | Volunteer — MERL | fredsiteti72@gmail.com |
-| 39 | Faith Makokha | Volunteer — MERL | faith.makokha@yahoo.com |
-| 40 | Habib Namayi Nasengo | Volunteer — MERL | alhassanhaji@gmail.com |
-| 41 | Stephen Murimi Mwaniki | Volunteer — MERL | Stephenmurimi776@gmail.com |
-| 42 | Purity Mugweru | Volunteer — MERL | puritymugweru@gmail.com |
-| 43 | Mary Ndovola Wafula | Volunteer — MERL | maryndoh@gmail.com |
-| 44 | Stephen Omondi Omuga | Volunteer — MERL | Stephenomuga1988@gmail.com |
-| 45 | Kelvin Musyoka Mutua | Volunteer — MERL | musyoki287@gmail.com |
-| 46 | Winnie Emmaculate | Volunteer — MERL | osesewinnie@gmail.com |
-| 47 | Clare Karungari Gaturuku | Volunteer — MERL | claregaturuku@gmail.com |
-| 48 | Peter Gathara Kariuki | Volunteer — MERL | petergathara66@gmail.com |
-| 49 | Purity Nyakundi | Volunteer — MERL | nyakundip02@gmail.com |
-| 50 | Justine Nabwire Onyango | Volunteer — MERL | nabwirej877@gmail.com |
-| 51 | Chrispine Omondi Owino | Volunteer — MERL | chrispine.owino@gmail.com |
-| 52 | Mohamed Abdi Muse | Volunteer — MERL | mohammedabdi682@gmail.com |
-| 53 | Jaabir Abdi Bare | Volunteer — MERL | jabirabdi3@gmail.com |
-| 54 | Mursal Sahal Burale | Volunteer — MERL | mursalsb001@gmail.com |
-| 55 | Syria Gatwiri Mutuma | Volunteer — MERL | gatwirimutuma845@gmail.com |
-| 56 | Ruth Keli | Volunteer — Operations & HR | RKeli@basicneedskenya.org |
+| 21 | Ruth Keli | Volunteer — Operations & HR | RKeli@basicneedskenya.org |
 
 ---
 

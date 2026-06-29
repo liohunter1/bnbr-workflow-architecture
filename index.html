@@ -290,7 +290,7 @@
     <p>Document Ref: BNBR/FIN/AMWP/001/2026 &nbsp;|&nbsp; Effective: 1 April 2026 &nbsp;|&nbsp; Integrated with Xero</p>
   </div>
   <div class="header-meta">
-    <div class="badge">Documents: <span>21</span></div>
+    <div class="badge">Documents: <span>22</span></div>
     <div class="badge">Version <span>1.0</span></div>
   </div>
 </header>
@@ -307,23 +307,24 @@
 <li><a href="#doc1" onclick="setActive(this)">OUTPUT 1 — GOVERNANCE HIERARCHY MAP</a></li>
 <li><a href="#doc2" onclick="setActive(this)">OUTPUT 2 — USER ROLE MATRIX</a></li>
 <li><a href="#doc3" onclick="setActive(this)">OUTPUT 3 — APPROVAL AUTHORITY MATRIX</a></li>
-<li><a href="#doc4" onclick="setActive(this)">WORKFLOW 1 — PURCHASE REQUISITION & PROCUR…</a></li>
-<li><a href="#doc5" onclick="setActive(this)">WORKFLOW 2 — SUPPLIER BILL (INVOICE) APPRO…</a></li>
-<li><a href="#doc6" onclick="setActive(this)">WORKFLOW 3 — PAYMENT APPROVAL & EXECUTION</a></li>
-<li><a href="#doc7" onclick="setActive(this)">WORKFLOW 4 — CASH REQUISITION, IMPREST & P…</a></li>
-<li><a href="#doc8" onclick="setActive(this)">WORKFLOW 5 — PAYROLL APPROVAL</a></li>
-<li><a href="#doc9" onclick="setActive(this)">WORKFLOW 6 — JOURNAL ENTRY APPROVAL</a></li>
-<li><a href="#doc10" onclick="setActive(this)">WORKFLOW 7 — BUDGET ADJUSTMENT APPROVAL</a></li>
-<li><a href="#doc11" onclick="setActive(this)">WORKFLOW 8 — CONTRACT & CONSULTANCY APPROV…</a></li>
-<li><a href="#doc12" onclick="setActive(this)">WORKFLOW 9 — ASSET ACQUISITION</a></li>
-<li><a href="#doc13" onclick="setActive(this)">WORKFLOW 10 — ASSET DISPOSAL</a></li>
-<li><a href="#doc14" onclick="setActive(this)">WORKFLOW 11 — LEAVE APPLICATION</a></li>
-<li><a href="#doc15" onclick="setActive(this)">WORKFLOW 12 — ACTING APPOINTMENT</a></li>
-<li><a href="#doc16" onclick="setActive(this)">WORKFLOW 13 — STAFF EXIT</a></li>
-<li><a href="#doc17" onclick="setActive(this)">WORKFLOW 14 — DATA ACCESS & SYSTEM PERMISS…</a></li>
-<li><a href="#doc18" onclick="setActive(this)">DELEGATION AUTHORITY ARCHITECTURE</a></li>
-<li><a href="#doc19" onclick="setActive(this)">ESCALATION WORKFLOW</a></li>
-<li><a href="#doc20" onclick="setActive(this)">VALIDATION REPORT — UPDATED</a></li>
+<li><a href="#doc4" onclick="setActive(this)">04a: WF01a — Standalone Purchase Requisiti…</a></li>
+<li><a href="#doc5" onclick="setActive(this)">04b: WF01b — Purchase Order Generation</a></li>
+<li><a href="#doc6" onclick="setActive(this)">WORKFLOW 2 — SUPPLIER BILL (INVOICE) APPRO…</a></li>
+<li><a href="#doc7" onclick="setActive(this)">WORKFLOW 3 — PAYMENT APPROVAL & EXECUTION</a></li>
+<li><a href="#doc8" onclick="setActive(this)">WORKFLOW 4 — CASH REQUISITION, IMPREST & P…</a></li>
+<li><a href="#doc9" onclick="setActive(this)">WORKFLOW 5 — PAYROLL APPROVAL</a></li>
+<li><a href="#doc10" onclick="setActive(this)">WORKFLOW 6 — JOURNAL ENTRY APPROVAL</a></li>
+<li><a href="#doc11" onclick="setActive(this)">WORKFLOW 7 — BUDGET ADJUSTMENT APPROVAL</a></li>
+<li><a href="#doc12" onclick="setActive(this)">WORKFLOW 8 — CONTRACT & CONSULTANCY APPROV…</a></li>
+<li><a href="#doc13" onclick="setActive(this)">WORKFLOW 9 — ASSET ACQUISITION</a></li>
+<li><a href="#doc14" onclick="setActive(this)">WORKFLOW 10 — ASSET DISPOSAL</a></li>
+<li><a href="#doc15" onclick="setActive(this)">WORKFLOW 11 — LEAVE APPLICATION</a></li>
+<li><a href="#doc16" onclick="setActive(this)">WORKFLOW 12 — ACTING APPOINTMENT</a></li>
+<li><a href="#doc17" onclick="setActive(this)">WORKFLOW 13 — STAFF EXIT</a></li>
+<li><a href="#doc18" onclick="setActive(this)">WORKFLOW 14 — DATA ACCESS & SYSTEM PERMISS…</a></li>
+<li><a href="#doc19" onclick="setActive(this)">DELEGATION AUTHORITY ARCHITECTURE</a></li>
+<li><a href="#doc20" onclick="setActive(this)">ESCALATION WORKFLOW</a></li>
+<li><a href="#doc21" onclick="setActive(this)">VALIDATION REPORT — UPDATED</a></li>
 
       </ul>
     </nav>
@@ -335,7 +336,7 @@
       <div class="welcome-icon">&#x1F4CA;</div>
       <div class="welcome-text">
         <h2>BNBR ApprovalMax Workflow Architecture Package</h2>
-        <p>All 21 architecture documents sourced exclusively from the BNBR Workflow Plan Extract (7 May 2026) and Staff List (22 May 2026). Use the sidebar to navigate. Click <strong>&#x26F6; Fit</strong> on any diagram to toggle between fit-to-screen and full-scroll view.</p>
+        <p>All 22 architecture documents sourced exclusively from the BNBR Workflow Plan Extract (7 May 2026) and Staff List (22 May 2026). Use the sidebar to navigate. Click <strong>&#x26F6; Fit</strong> on any diagram to toggle between fit-to-screen and full-scroll view.</p>
       </div>
     </div>
 
@@ -643,93 +644,120 @@ flowchart TD
 <section class="card" id="doc4">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
-    <h2>WORKFLOW 1 — PURCHASE REQUISITION & PROCUREMENT APPROVAL</h2>
+    <h2>04a: WF01a — Standalone Purchase Requisition</h2>
     <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
   </div>
   <div class="diagram-wrap">
-    <textarea class="raw-md" style="display:none;"># WORKFLOW 1 — PURCHASE REQUISITION &amp; PROCUREMENT APPROVAL
-## Source: Workflow Plan Extract — Section 5.1 / Tables 2, 3, 4
+    <textarea class="raw-md" style="display:none;"># 04a: WF01a — Standalone Purchase Requisition
+
+This workflow handles the internal request, department head approval, sourcing, and compliance checks. It operates as a Custom Standalone Workflow in ApprovalMax to allow for custom text fields.
 
 ```mermaid
 flowchart TD
     START([🟢 START: Procurement Need Identified]) --&gt; REQ
 
-    REQ[&quot;📝 REQUESTOR\nSubmit Purchase Requisition in ApprovalMax\nInclude: item description, quantity, estimated cost,\nbudget line, project code, required quotations\nAttach COI declaration\nAttach Data Sharing Agreement if vendor handles personal data&quot;]
+    REQ[&quot;📝 STEP 1 — REQUESTOR (Standalone Form)\nSubmit Standalone Purchase Requisition\nCustom Fields: Project name, Activity, Budget line, Date needed,\nItem description, Qty, Size/Colour, Extra specific details&quot;]
 
-    REQ --&gt; SYSCK1{&quot;🤖 ApprovalMax AUTO-CHECK\n① Project code = active funded project?\n② Required quotations attached per tier?\n③ Single-sourcing justification if applicable?&quot;}
+    REQ --&gt; SYSCK1{&quot;🤖 ApprovalMax AUTO-CHECK\n① Project code = active funded project?\n② Budget code exists?&quot;}
 
-    SYSCK1 --&gt;|&quot;❌ Incomplete&quot;| REJ1([&quot;🔴 RETURNED TO REQUESTOR\nResubmit with missing documents&quot;])
+    SYSCK1 --&gt;|&quot;❌ Incomplete&quot;| REJ_SYS([&quot;🔴 RETURNED TO REQUESTOR\nSystem Blocked&quot;])
     
-    SYSCK1 --&gt;|&quot;✅ Passes&quot;| SPLIT_CHK{&quot;🛑 PROCUREMENT SPLIT CHECK\nApprovalMax flags if same supplier +\nsame project code + within 30 days\ncombined total crosses a threshold tier&quot;}
+    SYSCK1 --&gt;|&quot;✅ Passes&quot;| DEPT_REV
 
-    SPLIT_CHK --&gt;|&quot;🚨 Split detected&quot;| FLAG1[&quot;⚠️ FLAGGED: Potential procurement splitting\nReferred to Operations &amp; HR Manager\nfor written justification&quot;]
-    FLAG1 --&gt; OHR_SPLIT{&quot;Operations &amp; HR Manager\nReviews split flag\nLegitimate or artificial split?&quot;}
-    OHR_SPLIT --&gt;|&quot;Artificial split confirmed&quot;| HALT([&quot;🔴 HALT: Procurement rejected\nPolicy breach recorded&quot;])
-    OHR_SPLIT --&gt;|&quot;Legitimate — justified in writing&quot;| TIER_DET
-
-    SPLIT_CHK --&gt;|&quot;✅ No split&quot;| TIER_DET
-
-    TIER_DET[&quot;💰 DETERMINE THRESHOLD &amp; REQUIREMENTS\nTier 1: 0–4,999 (1 quote, single sourcing allowed)\nTier 2: 5,000–99,999 (3 quotes, Bid Analysis)\nTier 3: 100K–500K (3 quotes, LPO, 2-wk lead)\nTier 4: 500K–999K (3 quotes, LPO, 3-wk lead)\nTier 5: 1M+ (Full tender, Board award, 3-wk lead)&quot;]
-
-    TIER_DET --&gt; DEPT_REV
-
-    DEPT_REV[&quot;📋 STEP 2 — DEPARTMENT HEAD / PROGRAMS MGR / MERL LEAD\nGeoffrey Khira (Programs) / Jefferson Ponde (MERL) / Dept Head\n① Confirms programmatic need\n② Confirms budget availability (auto-checked vs Xero)\n③ Confirms procurement on annual plan OR\n   provides justification for unplanned procurement\nSLA: 24 hours&quot;]
-
+    DEPT_REV[&quot;📋 STEP 2 — DEPARTMENT HEAD REVIEW\n(Routed via Tracking Category Matrix)\n① Confirms programmatic need\n② Confirms budget availability\n③ Confirms procurement on annual plan\nSLA: 24 hours&quot;]
+    
     DEPT_REV --&gt; D1{&quot;Dept Head Decision&quot;}
-    D1 --&gt;|&quot;❌ Return with comments&quot;| REJ2([&quot;🟡 RETURNED TO REQUESTOR\nCorrects and resubmits&quot;])
-    D1 --&gt;|&quot;✅ Approved&quot;| OHR_REV
+    D1 --&gt;|&quot;❌ Return with comments&quot;| REJ1([&quot;🔴 RETURNED TO REQUESTOR\nCorrects and resubmits&quot;])
+    D1 --&gt;|&quot;✅ Approved&quot;| PO_SOURCING
 
-    OHR_REV[&quot;🏢 STEP 3 — OPERATIONS &amp; HR MANAGER\nJachtolinah Ndinda Nzive\n① Correct quotation count for tier?\n② Prequalified suppliers used?\n③ Bid Analysis Form completed?\n④ COI declaration signed?\n⑤ Single-sourcing justification if applicable?\nSLA: 24 hours&quot;]
+    PO_SOURCING[&quot;🛒 STEP 3 — PROCUREMENT SOURCING\n(Eleanor Ushindi)\n① Sources from prequalified list\n② For KES 5,000+: Obtains min. 3 quotes\n③ Uploads Bid Analysis Form to request\n④ Gathers Single-Source justification if applicable&quot;]
 
-    OHR_REV --&gt; D2{&quot;Ops &amp; HR Mgr Decision&quot;}
-    D2 --&gt;|&quot;❌ Return&quot;| REJ3([&quot;🟡 RETURNED TO REQUESTOR\nComments attached&quot;])
-    D2 --&gt;|&quot;✅ Approved&quot;| FIN_REV
+    PO_SOURCING --&gt; PO_SPLIT{&quot;🛑 PO SPLIT CHECK\nProcurement manually verifies if same supplier +\nsame project code + within 30 days\ncrosses a threshold tier.&quot;}
 
-    FIN_REV[&quot;💼 STEP 4 — ACTING FINANCE MANAGER\nPaul Celvins Ochieng&#x27;\n① Budget coding correct?\n② Donor eligibility confirmed?\n③ VAT / WHT treatment verified?\n④ Supplier legitimacy confirmed?\n⑤ Payment only to entity on approved LPO?\n⑥ Data Sharing Agreement in place\n   where vendor handles personal data?\nSLA: 24 hours&quot;]
+    PO_SPLIT --&gt;|&quot;🚨 Split detected&quot;| SPLIT_RES[&quot;⚠️ SPLIT RESOLUTION\nDocuments requirement to raise\nmultiple distinct POs for separate routing&quot;]
+    
+    PO_SPLIT --&gt;|&quot;✅ No split&quot;| FO_REV
+    SPLIT_RES --&gt; FO_REV
 
-    FIN_REV --&gt; D3{&quot;Finance Mgr Decision&quot;}
-    D3 --&gt;|&quot;❌ Query&quot;| REJ4([&quot;🟡 RETURNED TO FO\nActing FO resolves query&quot;])
-    D3 --&gt;|&quot;✅ Approved&quot;| LPO_GEN
+    FO_REV[&quot;💼 STEP 4 — FINANCE OFFICER REVIEW\n① Reviews Bid Analysis for mathematical accuracy\n② Verifies compliance with prequalified vendor list\nSLA: 24 hours&quot;]
 
-    LPO_GEN[&quot;🖨️ LPO GENERATED IN XERO\n(For procurements KES 5,000 and above)\nPayment entity locked to LPO entity&quot;]
+    FO_REV --&gt; D2{&quot;FO Decision&quot;}
+    D2 --&gt;|&quot;❌ Query&quot;| REJ2([&quot;🟡 RETURNED TO PROCUREMENT\nResolves query&quot;])
+    D2 --&gt;|&quot;✅ Reviewed&quot;| OHR_REV
+
+    OHR_REV[&quot;🏢 STEP 5 — OPERATIONS &amp; HR MANAGER REVIEW\n① Correct quotation count for tier?\n② Prequalified suppliers used?\n③ Bid Analysis Form completed &amp; uploaded?\nSLA: 24 hours&quot;]
+
+    OHR_REV --&gt; D3{&quot;Ops &amp; HR Mgr Decision&quot;}
+    D3 --&gt;|&quot;❌ Query&quot;| REJ3([&quot;🟡 RETURNED TO PROCUREMENT\nComments attached&quot;])
+    D3 --&gt;|&quot;✅ Reviewed&quot;| FM_APPR
+
+    FM_APPR[&quot;📊 STEP 6 — FINANCE MANAGER APPROVAL\n① Final sign-off on the Sourcing process\n② Verifies donor eligibility and VAT treatment\nSLA: 24 hours&quot;]
+
+    FM_APPR --&gt; D4{&quot;Finance Mgr Decision&quot;}
+    D4 --&gt;|&quot;❌ Query&quot;| REJ4([&quot;🟡 RETURNED TO PROCUREMENT\nResolves query&quot;])
+    D4 --&gt;|&quot;✅ Approved&quot;| END_SOURCING([&quot;🟢 END WF01a: Standalone Requisition Approved.\nPDF generated. Proceed to LPO Generation.&quot;])
+
+    style START fill:#2d6a4f,color:#fff
+    style END_SOURCING fill:#2d6a4f,color:#fff
+    style REJ_SYS fill:#e07a5f,color:#fff
+    style REJ1 fill:#e07a5f,color:#fff
+    style REJ2 fill:#e07a5f,color:#fff
+    style REJ3 fill:#e07a5f,color:#fff
+    style REJ4 fill:#e07a5f,color:#fff
+    style PO_SOURCING fill:#264653,color:#fff
+    style SPLIT_RES fill:#f4a261,color:#000
+```
+</textarea>
+    <div class="md-out"></div>
+  </div>
+</section>
+<section class="card" id="doc5">
+  <div class="card-header">
+    <span class="card-icon">&#x25A6;</span>
+    <h2>04b: WF01b — Purchase Order Generation</h2>
+    <button class="zoom-btn" onclick="toggleZoom(this)" title="Toggle fit/scroll">&#x26F6; Fit</button>
+  </div>
+  <div class="diagram-wrap">
+    <textarea class="raw-md" style="display:none;"># 04b: WF01b — Purchase Order Generation
+
+This workflow handles the final generation of the LPO in Xero and the Tier Gates. It operates as a Xero-linked Purchase Order Workflow in ApprovalMax, manually initiated by the Procurement Officer after the Standalone Requisition (WF01a) is complete.
+
+```mermaid
+flowchart TD
+    START([🟢 START: Standalone Requisition Approved]) --&gt; LPO_GEN
+
+    LPO_GEN[&quot;🖨️ STEP 1 — PROCUREMENT INITIATION\nProcurement Officer manually creates Purchase Order\nCopies data from approved Standalone PDF\nIf split was detected, multiple distinct POs generated and routed separately&quot;]
 
     LPO_GEN --&gt; TIER_GATE{&quot;TIER APPROVAL GATE\nWhat tier is this procurement?&quot;}
 
-    TIER_GATE --&gt;|&quot;Tier 1 or Tier 2\n(KES 0–99,999)&quot;| APPROVED_T1T2[&quot;✅ APPROVED — Tier 1 / Tier 2\nFinal authority: Acting Finance Manager\n(Paul Ochieng&#x27;)&quot;]
+    TIER_GATE --&gt;|&quot;Tier 1 or Tier 2\n(KES 0–99,999)&quot;| APPROVED_T1T2[&quot;✅ APPROVED — Tier 1 / Tier 2\nFinal authority: Acting Finance Manager&quot;]
 
-    TIER_GATE --&gt;|&quot;Tier 3\n(KES 100,000–500,000)&quot;| AED_APPR[&quot;🔑 STEP 5a — ACTING EXECUTIVE DIRECTOR\nRebecca Mbaya\nApproves via ApprovalMax mobile or web\nSLA: 48–72 hours&quot;]
-    AED_APPR --&gt; D4a{&quot;AED Decision&quot;}
-    D4a --&gt;|&quot;❌ Reject&quot;| REJ5a([&quot;🔴 REJECTED\nFull explanation required&quot;])
-    D4a --&gt;|&quot;✅ Approved&quot;| APPROVED_T3[&quot;✅ APPROVED — Tier 3\nFinal authority: Acting ED&quot;]
+    TIER_GATE --&gt;|&quot;Tier 3\n(KES 100,000–500,000)&quot;| AED_APPR[&quot;🔑 STEP 2a — ACTING EXECUTIVE DIRECTOR\nApproves via ApprovalMax mobile or web\nSLA: 48–72 hours&quot;]
+    AED_APPR --&gt; D5a{&quot;AED Decision&quot;}
+    D5a --&gt;|&quot;❌ Reject&quot;| REJ5a([&quot;🔴 REJECTED\nFull explanation required&quot;])
+    D5a --&gt;|&quot;✅ Approved&quot;| APPROVED_T3[&quot;✅ APPROVED — Tier 3\nFinal authority: Acting ED&quot;]
 
-    TIER_GATE --&gt;|&quot;Tier 4\n(KES 500,001–999,999)&quot;| AED_BT[&quot;🔑 STEP 5b — ACTING ED + BOARD TREASURER\nRebecca Mbaya + CPA Charles Muhia\nBoth approvals MANDATORY\nSLA: 48–72 hours&quot;]
-    AED_BT --&gt; D4b{&quot;Both approved?&quot;}
-    D4b --&gt;|&quot;❌ Either rejects&quot;| REJ5b([&quot;🔴 REJECTED\nExplanation required&quot;])
-    D4b --&gt;|&quot;✅ Both approved&quot;| APPROVED_T4[&quot;✅ APPROVED — Tier 4\nFinal authority: AED + Board Treasurer&quot;]
+    TIER_GATE --&gt;|&quot;Tier 4\n(KES 500,001–999,999)&quot;| AED_BT[&quot;🔑 STEP 2b — ACTING ED + BOARD TREASURER\nBoth approvals MANDATORY\nSLA: 48–72 hours&quot;]
+    AED_BT --&gt; D5b{&quot;Both approved?&quot;}
+    D5b --&gt;|&quot;❌ Either rejects&quot;| REJ5b([&quot;🔴 REJECTED\nExplanation required&quot;])
+    D5b --&gt;|&quot;✅ Both approved&quot;| APPROVED_T4[&quot;✅ APPROVED — Tier 4\nFinal authority: AED + Board Treasurer&quot;]
 
-    TIER_GATE --&gt;|&quot;Tier 5\n(KES 1,000,000+)&quot;| BOARD_FULL[&quot;🏛️ STEP 5c — FULL BOARD APPROVAL\nBoard Treasurer (CPA Charles Muhia)\n+ Board Chairperson (Boniface Chitayi)\nFull tendering process\nBoard award decision\nSLA: Up to 3 weeks&quot;]
-    BOARD_FULL --&gt; D4c{&quot;Board Decision&quot;}
-    D4c --&gt;|&quot;❌ Rejected&quot;| REJ5c([&quot;🔴 REJECTED\nBoard resolution documented&quot;])
-    D4c --&gt;|&quot;✅ Approved&quot;| APPROVED_T5[&quot;✅ APPROVED — Tier 5\nFinal authority: Board Treasurer + Board Chairperson&quot;]
+    TIER_GATE --&gt;|&quot;Tier 5\n(KES 1,000,000+)&quot;| BOARD_FULL[&quot;🏛️ STEP 2c — FULL BOARD APPROVAL\nBoard Treasurer + Board Chairperson\nFull tendering process\nBoard award decision\nSLA: Up to 3 weeks&quot;]
+    BOARD_FULL --&gt; D5c{&quot;Board Decision&quot;}
+    D5c --&gt;|&quot;❌ Rejected&quot;| REJ5c([&quot;🔴 REJECTED\nBoard resolution documented&quot;])
+    D5c --&gt;|&quot;✅ Approved&quot;| APPROVED_T5[&quot;✅ APPROVED — Tier 5\nFinal authority: Board Treasurer + Board Chairperson&quot;]
 
     APPROVED_T1T2 --&gt; GRN_STEP
     APPROVED_T3 --&gt; GRN_STEP
     APPROVED_T4 --&gt; GRN_STEP
     APPROVED_T5 --&gt; GRN_STEP
 
-    GRN_STEP[&quot;📦 GOODS / SERVICES RECEIVED\nUser department verifies against LPO / Contract\nSigns Goods Received Note (GRN)\nWithin 1 working day of receipt\nGRN passed to Finance within 1 working day&quot;]
-
-    GRN_STEP --&gt; GRN_UP[&quot;🤖 SYSTEM ACTION (ApprovalMax/Xero)\nGRN uploaded and linked to Xero PO\nBill Matching Workflow (Section 5.2) TRIGGERED&quot;]
-
-    GRN_UP --&gt; END_OK([&quot;🟢 END: Procurement Complete\nAudit trail locked in ApprovalMax&quot;])
+    GRN_STEP[&quot;🤖 SYSTEM ACTION (ApprovalMax/Xero)\nPurchase Order formally created in Xero.\nReady to be sent to Supplier.\nAudit trail locked in ApprovalMax&quot;]
+    
+    GRN_STEP --&gt; END_OK([&quot;🟢 END WF01b: Procurement Complete&quot;])
 
     style START fill:#2d6a4f,color:#fff
     style END_OK fill:#2d6a4f,color:#fff
-    style HALT fill:#c1121f,color:#fff
-    style REJ1 fill:#e07a5f,color:#fff
-    style REJ2 fill:#e07a5f,color:#fff
-    style REJ3 fill:#e07a5f,color:#fff
-    style REJ4 fill:#e07a5f,color:#fff
     style REJ5a fill:#c1121f,color:#fff
     style REJ5b fill:#c1121f,color:#fff
     style REJ5c fill:#c1121f,color:#fff
@@ -737,27 +765,12 @@ flowchart TD
     style APPROVED_T3 fill:#2d6a4f,color:#fff
     style APPROVED_T4 fill:#2d6a4f,color:#fff
     style APPROVED_T5 fill:#2d6a4f,color:#fff
-    style FLAG1 fill:#f4a261,color:#000
-    style TIER_DET fill:#264653,color:#fff
-    style BOARD_FULL fill:#1a1a2e,color:#fff
 ```
-
----
-
-## PROCUREMENT POLICY KEY CONTROLS (Source: Table 4)
-
-| Control | Rule |
-|---------|------|
-| No Procurement Splitting | ApprovalMax flags: same supplier + same project code + within 30 days where combined total crosses a threshold tier |
-| Single Sourcing | Restricted to KES 4,999.99 or below; OR exclusive supplier / warranty / donor-imposed. Written justification from Ops &amp; HR Mgr + Acting ED written approval required |
-| Conflict of Interest | All staff sign COI declaration stored in ApprovalMax vendor record. No participation where personal relationship with supplier exists |
-| Data Protection | Vendor contracts involving personal data processing require Data Sharing Agreement (Data Protection Policy Section 10.1.3) |
-| Bid Analysis Form | Mandatory for ALL procurement. Must detail evaluation criteria and rationale. Uploaded before procurement can proceed |
 </textarea>
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc5">
+<section class="card" id="doc6">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 2 — SUPPLIER BILL (INVOICE) APPROVAL</h2>
@@ -840,7 +853,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc6">
+<section class="card" id="doc7">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 3 — PAYMENT APPROVAL & EXECUTION</h2>
@@ -937,7 +950,7 @@ flowchart LR
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc7">
+<section class="card" id="doc8">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 4 — CASH REQUISITION, IMPREST & PETTY CASH</h2>
@@ -1023,7 +1036,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc8">
+<section class="card" id="doc9">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 5 — PAYROLL APPROVAL</h2>
@@ -1106,7 +1119,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc9">
+<section class="card" id="doc10">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 6 — JOURNAL ENTRY APPROVAL</h2>
@@ -1173,7 +1186,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc10">
+<section class="card" id="doc11">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 7 — BUDGET ADJUSTMENT APPROVAL</h2>
@@ -1247,7 +1260,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc11">
+<section class="card" id="doc12">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 8 — CONTRACT & CONSULTANCY APPROVAL</h2>
@@ -1296,7 +1309,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc12">
+<section class="card" id="doc13">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 9 — ASSET ACQUISITION</h2>
@@ -1357,7 +1370,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc13">
+<section class="card" id="doc14">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 10 — ASSET DISPOSAL</h2>
@@ -1422,7 +1435,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc14">
+<section class="card" id="doc15">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 11 — LEAVE APPLICATION</h2>
@@ -1550,7 +1563,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc15">
+<section class="card" id="doc16">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 12 — ACTING APPOINTMENT</h2>
@@ -1621,7 +1634,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc16">
+<section class="card" id="doc17">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 13 — STAFF EXIT</h2>
@@ -1693,7 +1706,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc17">
+<section class="card" id="doc18">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>WORKFLOW 14 — DATA ACCESS & SYSTEM PERMISSION APPROVAL</h2>
@@ -1791,7 +1804,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc18">
+<section class="card" id="doc19">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>DELEGATION AUTHORITY ARCHITECTURE</h2>
@@ -1892,7 +1905,7 @@ flowchart TD
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc19">
+<section class="card" id="doc20">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>ESCALATION WORKFLOW</h2>
@@ -1996,7 +2009,7 @@ gantt
     <div class="md-out"></div>
   </div>
 </section>
-<section class="card" id="doc20">
+<section class="card" id="doc21">
   <div class="card-header">
     <span class="card-icon">&#x25A6;</span>
     <h2>VALIDATION REPORT — UPDATED</h2>
